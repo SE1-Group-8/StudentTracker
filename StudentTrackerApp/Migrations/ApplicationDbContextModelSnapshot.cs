@@ -8,8 +8,8 @@ using StudentTrackerApp.Services;
 
 namespace StudentTrackerApp.Migrations
 {
-    [DbContext(typeof(StudentDbContext))]
-    partial class StudentDbContextModelSnapshot : ModelSnapshot
+    [DbContext(typeof(ApplicationDbContext))]
+    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
@@ -44,7 +44,7 @@ namespace StudentTrackerApp.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Students");
+                    b.ToTable("StudentTracker");
                 });
 #pragma warning restore 612, 618
         }
