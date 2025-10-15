@@ -8,7 +8,7 @@ using StudentTrackerApp.Services;
 
 namespace StudentTrackerApp.Migrations
 {
-    [DbContext(typeof(StudentDbContext))]
+    [DbContext(typeof(CheckInDbContext))]
     partial class StudentDbContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)

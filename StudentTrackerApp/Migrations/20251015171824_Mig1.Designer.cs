@@ -9,7 +9,7 @@ using StudentTrackerApp.Services;
 
 namespace StudentTrackerApp.Migrations
 {
-    [DbContext(typeof(StudentDbContext))]
+    [DbContext(typeof(CheckInDbContext))]
     [Migration("20251015171824_Mig1")]
     partial class Mig1
     {
