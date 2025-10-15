@@ -9,9 +9,9 @@ using StudentTrackerApp.Services;
 
 namespace StudentTrackerApp.Migrations
 {
-    [DbContext(typeof(StudentDbContext))]
-    [Migration("20251015171824_Mig1")]
-    partial class Mig1
+    [DbContext(typeof(ApplicationDbContext))]
+    [Migration("20251015175911_addStudent")]
+    partial class addStudent
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -47,7 +47,7 @@ namespace StudentTrackerApp.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Students");
+                    b.ToTable("StudentTracker");
                 });
 #pragma warning restore 612, 618
         }

@@ -5,13 +5,13 @@
 namespace StudentTrackerApp.Migrations
 {
     /// <inheritdoc />
-    public partial class Mig1 : Migration
+    public partial class addStudent : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Students",
+                name: "StudentTracker",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
@@ -24,7 +24,7 @@ namespace StudentTrackerApp.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Students", x => x.Id);
+                    table.PrimaryKey("PK_StudentTracker", x => x.Id);
                 });
         }
 
@@ -32,7 +32,7 @@ namespace StudentTrackerApp.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Students");
+                name: "StudentTracker");
         }
     }
 }

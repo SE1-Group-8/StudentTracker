@@ -14,8 +14,8 @@ namespace StudentTrackerApp
             builder.Services.AddRazorComponents()
                 .AddInteractiveServerComponents();
 
-			builder.Services.AddDbContext<StudentDbContext>(options =>
-	            options.UseSqlite("Data Source=Data/students.db"));
+			builder.Services.AddDbContext<ApplicationDbContext>(options =>
+	            options.UseSqlite("Data Source=Data/StudentTracker.db"));
 
 			var app = builder.Build();
 
