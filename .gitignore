@@ -22,6 +22,14 @@ project.assets.json
 project.nuget.cache
 StudentTrackerApp.csproj.nuget.dgspec.json
 StudentTrackerApp.csproj.nuget.g.props
+StudentTrackerApp\obj\Debug\net8.0\StudentTrackerApp.AssemblyInfo.cs
+StudentTrackerApp\obj\Debug\net8.0\StudentTrackerApp.AssemblyInfoInputs.cache
+StudentTrackerApp\obj\Debug\net8.0\StudentTrackerApp.assets.cache
+StudentTrackerApp\obj\Debug\net8.0\StudentTrackerApp.GeneratedMSBuildEditorConfig.editorconfig
+StudentTrackerApp\obj\project.assets.json
+StudentTrackerApp\obj\project.nuget.cache
+StudentTrackerApp\obj\StudentTrackerApp.csproj.nuget.dgspec.json
+StudentTrackerApp\obj\StudentTrackerApp.csproj.nuget.g.props
 
 # User-specific files
 *.rsuser
