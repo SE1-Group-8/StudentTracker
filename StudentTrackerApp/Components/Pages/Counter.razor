@@ -1,19 +1,13 @@
 ﻿@page "/counter"
 @rendermode InteractiveServer
 
-<PageTitle>Counter</PageTitle>
+Create an Account
 
-<h1>Counter</h1>
+Teacher or Student:
 
-<p role="status">Current count: @currentCount</p>
-
-<button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
-
-@code {
-    private int currentCount = 0;
-
-    private void IncrementCount()
-    {
-        currentCount++;
-    }
-}
+User ID:<input type="text" name="userID" />
+First Name: <input type="text" name="firstName" />
+Last Name:  <input type="text" name="lastName" />
+Email: <input type="text" name="email" />
+Create Password: <input type="text" name="password" />
+Your Teachers ID: <input type="text" name="teacherID" />
