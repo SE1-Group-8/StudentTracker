@@ -3,6 +3,26 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/main/VisualStudio.gitignore
 
+# Manually added files to ignore
+StudentTrackerApp.exe
+StudentTrackerApp.pdb
+StudentTrackerApp.staticwebassets.runtime.json
+apphost.exe
+staticwebassets.build.json
+staticwebassets.development.json
+StudentTrackerApp.AssemblyInfo.cs
+StudentTrackerApp.AssemblyInfoInputs.cache
+StudentTrackerApp.assets.cache
+StudentTrackerApp.csproj.CoreCompileInputs.cache
+StudentTrackerApp.csproj.FileListAbsolute.txt
+StudentTrackerApp.dll
+StudentTrackerApp.GeneratedMSBuildEditorConfig.editorconfig
+StudentTrackerApp.genruntimeconfig.cache
+project.assets.json
+project.nuget.cache
+StudentTrackerApp.csproj.nuget.dgspec.json
+StudentTrackerApp.csproj.nuget.g.props
+
 # User-specific files
 *.rsuser
 *.suo
