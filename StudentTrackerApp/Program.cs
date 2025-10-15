@@ -1,4 +1,6 @@
+using Microsoft.EntityFrameworkCore;
 using StudentTrackerApp.Components;
+using StudentTrackerApp.Services;
 
 namespace StudentTrackerApp
 {
@@ -12,7 +14,10 @@ namespace StudentTrackerApp
             builder.Services.AddRazorComponents()
                 .AddInteractiveServerComponents();
 
-            var app = builder.Build();
+			builder.Services.AddDbContext<StudentDbContext>(options =>
+	            options.UseSqlite("Data Source=Data/students.db"));
+
+			var app = builder.Build();
 
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())
