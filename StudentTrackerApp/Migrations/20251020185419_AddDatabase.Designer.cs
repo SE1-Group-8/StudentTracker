@@ -10,8 +10,8 @@ using StudentTrackerApp.Services;
 namespace StudentTrackerApp.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20251020174309_StudentTeacherDb")]
-    partial class StudentTeacherDb
+    [Migration("20251020185419_AddDatabase")]
+    partial class AddDatabase
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -41,9 +41,6 @@ namespace StudentTrackerApp.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("Teacher")
-                        .HasColumnType("INTEGER");
-
                     b.HasKey("Id");
 
                     b.ToTable("StudentDb");
@@ -55,8 +52,7 @@ namespace StudentTrackerApp.Migrations
                             Email = "bobbyhill@etsu.edu",
                             FirstName = "Bobby",
                             LastName = "Hill",
-                            Password = "Password",
-                            Teacher = 1
+                            Password = "Password"
                         });
                 });
 
@@ -99,12 +95,19 @@ namespace StudentTrackerApp.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("Student")
-                        .HasColumnType("INTEGER");
-
                     b.HasKey("Id");
 
                     b.ToTable("TeacherDb");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Email = "johnteach@etsu.edu",
+                            FirstName = "John",
+                            LastName = "Teach",
+                            Password = "Password"
+                        });
                 });
 #pragma warning restore 612, 618
         }

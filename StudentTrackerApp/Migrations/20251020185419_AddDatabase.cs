@@ -5,31 +5,26 @@
 namespace StudentTrackerApp.Migrations
 {
     /// <inheritdoc />
-    public partial class StudentTeacherDb : Migration
+    public partial class AddDatabase : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropPrimaryKey(
-                name: "PK_StudentTracker",
-                table: "StudentTracker");
-
-            migrationBuilder.RenameTable(
-                name: "StudentTracker",
-                newName: "StudentDb");
-
-            migrationBuilder.AlterColumn<int>(
-                name: "Teacher",
-                table: "StudentDb",
-                type: "INTEGER",
-                nullable: false,
-                oldClrType: typeof(string),
-                oldType: "TEXT");
-
-            migrationBuilder.AddPrimaryKey(
-                name: "PK_StudentDb",
-                table: "StudentDb",
-                column: "Id");
+            migrationBuilder.CreateTable(
+                name: "StudentDb",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    FirstName = table.Column<string>(type: "TEXT", nullable: false),
+                    LastName = table.Column<string>(type: "TEXT", nullable: false),
+                    Email = table.Column<string>(type: "TEXT", nullable: false),
+                    Password = table.Column<string>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_StudentDb", x => x.Id);
+                });
 
             migrationBuilder.CreateTable(
                 name: "StudentTeacherDb",
@@ -54,8 +49,7 @@ namespace StudentTrackerApp.Migrations
                     FirstName = table.Column<string>(type: "TEXT", nullable: false),
                     LastName = table.Column<string>(type: "TEXT", nullable: false),
                     Email = table.Column<string>(type: "TEXT", nullable: false),
-                    Password = table.Column<string>(type: "TEXT", nullable: false),
-                    Student = table.Column<int>(type: "INTEGER", nullable: false)
+                    Password = table.Column<string>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -64,44 +58,26 @@ namespace StudentTrackerApp.Migrations
 
             migrationBuilder.InsertData(
                 table: "StudentDb",
-                columns: new[] { "Id", "Email", "FirstName", "LastName", "Password", "Teacher" },
-                values: new object[] { 1, "bobbyhill@etsu.edu", "Bobby", "Hill", "Password", 1 });
+                columns: new[] { "Id", "Email", "FirstName", "LastName", "Password" },
+                values: new object[] { 1, "bobbyhill@etsu.edu", "Bobby", "Hill", "Password" });
+
+            migrationBuilder.InsertData(
+                table: "TeacherDb",
+                columns: new[] { "Id", "Email", "FirstName", "LastName", "Password" },
+                values: new object[] { 1, "johnteach@etsu.edu", "John", "Teach", "Password" });
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
+                name: "StudentDb");
+
+            migrationBuilder.DropTable(
                 name: "StudentTeacherDb");
 
             migrationBuilder.DropTable(
                 name: "TeacherDb");
-
-            migrationBuilder.DropPrimaryKey(
-                name: "PK_StudentDb",
-                table: "StudentDb");
-
-            migrationBuilder.DeleteData(
-                table: "StudentDb",
-                keyColumn: "Id",
-                keyValue: 1);
-
-            migrationBuilder.RenameTable(
-                name: "StudentDb",
-                newName: "StudentTracker");
-
-            migrationBuilder.AlterColumn<string>(
-                name: "Teacher",
-                table: "StudentTracker",
-                type: "TEXT",
-                nullable: false,
-                oldClrType: typeof(int),
-                oldType: "INTEGER");
-
-            migrationBuilder.AddPrimaryKey(
-                name: "PK_StudentTracker",
-                table: "StudentTracker",
-                column: "Id");
         }
     }
 }
