@@ -15,19 +15,19 @@ namespace StudentTrackerApp.Repositories
 
         public async Task<ICollection<Student>> ReadAllAsync()
         {
-            return await _db.StudentTracker.ToListAsync();
+            return await _db.StudentDb.ToListAsync();
         }
 
         public async Task<Student> CreateAsync(Student newPerson)
         {
-            await _db.StudentTracker.AddAsync(newPerson);
+            await _db.StudentDb.AddAsync(newPerson);
             await _db.SaveChangesAsync();
             return newPerson;
         }
 
         public async Task<Student?> ReadAsync(int id)
         {
-            return await _db.StudentTracker.FindAsync(id);
+            return await _db.StudentDb.FindAsync(id);
             //return await _db.Students.FirstOrDefaultAsync((p) => p.Id == id);
         }
 
@@ -50,7 +50,7 @@ namespace StudentTrackerApp.Repositories
             Student? studentToDelete = await ReadAsync(id);
             if (studentToDelete != null)
             {
-                _db.StudentTracker.Remove(studentToDelete);
+                _db.StudentDb.Remove(studentToDelete);
                 await _db.SaveChangesAsync();
             }
         }
