@@ -9,6 +9,7 @@
 
 		public DbSet<Student> StudentDb { get; set; }
         public DbSet<Teacher> TeacherDb { get; set; }
+        public DbSet<StudentTeacher> StudentTeacherDb { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

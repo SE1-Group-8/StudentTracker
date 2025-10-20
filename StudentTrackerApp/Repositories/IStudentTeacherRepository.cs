@@ -5,8 +5,8 @@ namespace StudentTrackerApp.Repositories
 {
 	public interface IStudentTeacherRepository
 	{
-		public Task<Collection<Student>> GetStudentsByTeacherIdAsync(int teacherId);
-		public Task<Collection<Teacher>> GetTeachersByStudentIdAsync(int studentId);
+		public Task<List<int>> GetStudentsByTeacherIdAsync(int teacherId);
+		public Task<List<int>> GetTeachersByStudentIdAsync(int studentId);
 
 	}
 }
