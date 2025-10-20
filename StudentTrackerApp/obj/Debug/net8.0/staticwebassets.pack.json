@@ -1,24 +1,28 @@
 {
   "Files": [
     {
-      "Id": "C:\\Users\\scyth\\OneDrive\\Documents\\GitHub\\StudentTracker\\StudentTrackerApp\\obj\\Debug\\net8.0\\scopedcss\\projectbundle\\StudentTrackerApp.bundle.scp.css",
-      "PackagePath": "staticwebassets\\StudentTrackerApp.bundle.scp.css"
+      "Id": "C:\\Users\\adali\\Documents\\GitHub\\StudentTracker\\StudentTrackerApp\\obj\\Debug\\net8.0\\scopedcss\\projectbundle\\StudentTrackerApp.bundle.scp.css",
+      "PackagePath": "staticwebassets\\StudentTrackerApp.wslxtsdj7h.bundle.scp.css"
     },
     {
-      "Id": "C:\\Users\\scyth\\OneDrive\\Documents\\GitHub\\StudentTracker\\StudentTrackerApp\\wwwroot\\app.css",
+      "Id": "C:\\Users\\adali\\Documents\\GitHub\\StudentTracker\\StudentTrackerApp\\wwwroot\\app.css",
       "PackagePath": "staticwebassets\\app.css"
     },
     {
-      "Id": "C:\\Users\\scyth\\OneDrive\\Documents\\GitHub\\StudentTracker\\StudentTrackerApp\\wwwroot\\bootstrap\\bootstrap.min.css",
+      "Id": "C:\\Users\\adali\\Documents\\GitHub\\StudentTracker\\StudentTrackerApp\\wwwroot\\bootstrap\\bootstrap.min.css",
       "PackagePath": "staticwebassets\\bootstrap\\bootstrap.min.css"
     },
     {
-      "Id": "C:\\Users\\scyth\\OneDrive\\Documents\\GitHub\\StudentTracker\\StudentTrackerApp\\wwwroot\\bootstrap\\bootstrap.min.css.map",
+      "Id": "C:\\Users\\adali\\Documents\\GitHub\\StudentTracker\\StudentTrackerApp\\wwwroot\\bootstrap\\bootstrap.min.css.map",
       "PackagePath": "staticwebassets\\bootstrap\\bootstrap.min.css.map"
     },
     {
-      "Id": "C:\\Users\\scyth\\OneDrive\\Documents\\GitHub\\StudentTracker\\StudentTrackerApp\\wwwroot\\favicon.png",
+      "Id": "C:\\Users\\adali\\Documents\\GitHub\\StudentTracker\\StudentTrackerApp\\wwwroot\\favicon.png",
       "PackagePath": "staticwebassets\\favicon.png"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.StudentTrackerApp.Microsoft.AspNetCore.StaticWebAssetEndpoints.props",
+      "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssetEndpoints.props"
     },
     {
       "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.StudentTrackerApp.Microsoft.AspNetCore.StaticWebAssets.props",
