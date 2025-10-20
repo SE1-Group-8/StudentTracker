@@ -14,8 +14,14 @@
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Models.Student>().HasData(
-                new Models.Student { Id = 1, FirstName = "Bobby", LastName = "Hill", Email = "bobbyhill@etsu.edu", Password = "Password", Teacher = 1 }
+                new Models.Student { Id = 1, FirstName = "Bobby", LastName = "Hill", Email = "bobbyhill@etsu.edu", Password = "Password" }
             );
-        }
+			modelBuilder.Entity<Models.Teacher>().HasData(
+				new Models.Teacher { Id = 1, FirstName = "John", LastName = "Teach", Email = "johnteach@etsu.edu", Password = "Password" }
+			);
+			modelBuilder.Entity<Models.StudentTeacher>().HasData(
+				new Models.StudentTeacher { Id = 1, StudentId = 1, TeacherId = 1 }
+			);
+		}
     }
 }

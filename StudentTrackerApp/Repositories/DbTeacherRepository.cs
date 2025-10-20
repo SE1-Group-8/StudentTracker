@@ -39,7 +39,7 @@ namespace StudentTrackerApp.Repositories
                 teacherToUpdate.LastName = teacher.LastName;
                 teacherToUpdate.Email = teacher.Email;
                 teacherToUpdate.Password = teacher.Password;
-                teacherToUpdate.Student = teacher.Student;
+                //teacherToUpdate.Student = teacher.Student;
                 await _db.SaveChangesAsync();
             }
         }
