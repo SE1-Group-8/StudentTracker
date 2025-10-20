@@ -1,6 +1,10 @@
 ﻿@page "/teacher"
 @attribute [StreamRendering]
-
+@using Repositories
+@using Models
+@inject IStudentRepository studentrepo
+@inject ITeacherRepository teacherrepo
+@inject IStudentTeacherRepository studentteacherrepo
 <PageTitle>Teacher</PageTitle>
 
 <h1>Teacher</h1>
@@ -28,9 +32,9 @@ else
             @foreach (var student in students)
             {
                 <tr>
-                    <td>@student</td>
-                    <td>@student</td>
-                    <td>@student</td>
+                    <td>@student.FirstName</td>
+                    <td>@student.LastName</td>
+                    <td>@student.Email</td>
                     <td>@student</td>
                 </tr>
             }
@@ -39,22 +43,14 @@ else
 }
 
 @code {
-    private Students[]? students;
+    private List<Student> students = new List<Student>();
 
     protected override async Task OnInitializedAsync()
     {
-        await Task.Delay(500);
-
-        students = Enumerable.Range(1, 5).Select(index => new Students
+        List<int> mystudentids = await studentteacherrepo.GetStudentsByTeacherIdAsync(1); // Get from login page
+        foreach (int student in mystudentids)
         {
-        }).ToArray();
-    }
-
-    private class Students
-    {
-        public string? FirstName { get; set; }
-        public string? LastName { get; set; }
-        public string? Email { get; set; }
-        public int? Hours { get; set; }
+            students.Add(await studentrepo.ReadAsync(student));
+        }
     }
 }

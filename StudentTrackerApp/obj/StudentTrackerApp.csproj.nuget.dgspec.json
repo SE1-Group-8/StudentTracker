@@ -1,23 +1,23 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\ETSU\\source\\repos\\SE1-Group-8\\StudentTracker\\StudentTrackerApp\\StudentTrackerApp.csproj": {}
+    "C:\\Users\\mulli\\OneDrive\\Documents\\GitHub\\StudentTracker\\StudentTrackerApp\\StudentTrackerApp.csproj": {}
   },
   "projects": {
-    "C:\\Users\\ETSU\\source\\repos\\SE1-Group-8\\StudentTracker\\StudentTrackerApp\\StudentTrackerApp.csproj": {
+    "C:\\Users\\mulli\\OneDrive\\Documents\\GitHub\\StudentTracker\\StudentTrackerApp\\StudentTrackerApp.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\ETSU\\source\\repos\\SE1-Group-8\\StudentTracker\\StudentTrackerApp\\StudentTrackerApp.csproj",
+        "projectUniqueName": "C:\\Users\\mulli\\OneDrive\\Documents\\GitHub\\StudentTracker\\StudentTrackerApp\\StudentTrackerApp.csproj",
         "projectName": "StudentTrackerApp",
-        "projectPath": "C:\\Users\\ETSU\\source\\repos\\SE1-Group-8\\StudentTracker\\StudentTrackerApp\\StudentTrackerApp.csproj",
-        "packagesPath": "C:\\Users\\ETSU\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\ETSU\\source\\repos\\SE1-Group-8\\StudentTracker\\StudentTrackerApp\\obj\\",
+        "projectPath": "C:\\Users\\mulli\\OneDrive\\Documents\\GitHub\\StudentTracker\\StudentTrackerApp\\StudentTrackerApp.csproj",
+        "packagesPath": "C:\\Users\\mulli\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\mulli\\OneDrive\\Documents\\GitHub\\StudentTracker\\StudentTrackerApp\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\ETSU\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\mulli\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],

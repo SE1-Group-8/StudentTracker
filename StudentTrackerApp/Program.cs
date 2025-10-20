@@ -19,8 +19,10 @@ namespace StudentTrackerApp
 	            options.UseSqlite("Data Source=Data/StudentTracker.db"));
 
             builder.Services.AddScoped<IStudentRepository, DbStudentRepository>();
+            builder.Services.AddScoped<ITeacherRepository, DbTeacherRepository>();
+            builder.Services.AddScoped<IStudentTeacherRepository, DbStudentTeacherRepository>();
 
-			var app = builder.Build();
+            var app = builder.Build();
 
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())
