@@ -507,3 +507,4 @@ C:\Users\scyth\OneDrive\Documents\GitHub\StudentTracker\StudentTrackerApp\obj\De
 C:\Users\scyth\OneDrive\Documents\GitHub\StudentTracker\StudentTrackerApp\obj\Debug\net8.0\StudentTrackerApp.pdb
 C:\Users\scyth\OneDrive\Documents\GitHub\StudentTracker\StudentTrackerApp\obj\Debug\net8.0\StudentTrackerApp.genruntimeconfig.cache
 C:\Users\scyth\OneDrive\Documents\GitHub\StudentTracker\StudentTrackerApp\obj\Debug\net8.0\ref\StudentTrackerApp.dll
+C:\Users\adali\Documents\GitHub\StudentTracker\StudentTrackerApp\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt
