@@ -444,3 +444,7 @@ FodyWeavers.xsd
 *.msix
 *.msm
 *.msp
+StudentTrackerApp/obj/Debug/net8.0/StudentTrackerApp.AssemblyInfo.cs
+StudentTrackerApp/obj/Debug/net8.0/StudentTrackerApp.AssemblyInfoInputs.cache
+StudentTrackerApp/obj/Debug/net8.0/StudentTrackerApp.assets.cache
+StudentTrackerApp/obj/Debug/net8.0/StudentTrackerApp.GeneratedMSBuildEditorConfig.editorconfig
