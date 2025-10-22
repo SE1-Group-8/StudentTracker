@@ -1,9 +1,8 @@
 ﻿@page "/teacher"
 @attribute [StreamRendering]
-@	using Repositories
-@	using Models
-@inject IStudentRepository studentrepo
-@inject ITeacherRepository teacherrepo
+@using Repositories
+@using Models
+@inject IUserRepository userrepo
 @inject IStudentTeacherRepository studentteacherrepo
 <PageTitle>Teacher</PageTitle>
 
@@ -43,14 +42,14 @@ else
 }
 
 @code {
-    private List<Student> students = new List<Student>();
+    private List<User> students = new List<User>();
 
     protected override async Task OnInitializedAsync()
     {
         List<int> mystudentids = await studentteacherrepo.GetStudentsByTeacherIdAsync(1); // Get from login page
         foreach (int student in mystudentids)
         {
-            students.Add(await studentrepo.ReadAsync(student));
+            students.Add(await userrepo.ReadUserAsync(student));
         }
     }
 }

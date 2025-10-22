@@ -1,7 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using StudentTrackerApp.Components;
 using StudentTrackerApp.Repositories;
-using StudentTrackerApp.Repositories.OldStuff;
 using StudentTrackerApp.Services;
 
 namespace StudentTrackerApp
