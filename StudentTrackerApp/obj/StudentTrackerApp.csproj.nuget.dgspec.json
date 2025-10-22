@@ -1,23 +1,23 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\ETSU\\source\\repos\\SE1-Group-8\\StudentTracker\\StudentTrackerApp\\StudentTrackerApp.csproj": {}
+    "C:\\Users\\adali\\Documents\\GitHub\\StudentTracker\\StudentTrackerApp\\StudentTrackerApp.csproj": {}
   },
   "projects": {
-    "C:\\Users\\ETSU\\source\\repos\\SE1-Group-8\\StudentTracker\\StudentTrackerApp\\StudentTrackerApp.csproj": {
+    "C:\\Users\\adali\\Documents\\GitHub\\StudentTracker\\StudentTrackerApp\\StudentTrackerApp.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\ETSU\\source\\repos\\SE1-Group-8\\StudentTracker\\StudentTrackerApp\\StudentTrackerApp.csproj",
+        "projectUniqueName": "C:\\Users\\adali\\Documents\\GitHub\\StudentTracker\\StudentTrackerApp\\StudentTrackerApp.csproj",
         "projectName": "StudentTrackerApp",
-        "projectPath": "C:\\Users\\ETSU\\source\\repos\\SE1-Group-8\\StudentTracker\\StudentTrackerApp\\StudentTrackerApp.csproj",
-        "packagesPath": "C:\\Users\\ETSU\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\ETSU\\source\\repos\\SE1-Group-8\\StudentTracker\\StudentTrackerApp\\obj\\",
+        "projectPath": "C:\\Users\\adali\\Documents\\GitHub\\StudentTracker\\StudentTrackerApp\\StudentTrackerApp.csproj",
+        "packagesPath": "C:\\Users\\adali\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\adali\\Documents\\GitHub\\StudentTracker\\StudentTrackerApp\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\ETSU\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\adali\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -44,7 +44,7 @@
           "auditLevel": "low",
           "auditMode": "direct"
         },
-        "SdkAnalysisLevel": "9.0.300"
+        "SdkAnalysisLevel": "9.0.100"
       },
       "frameworks": {
         "net8.0": {
@@ -80,7 +80,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.305/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.102/PortableRuntimeIdentifierGraph.json"
         }
       }
     }
