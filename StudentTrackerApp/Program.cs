@@ -1,11 +1,12 @@
 using Microsoft.EntityFrameworkCore;
 using StudentTrackerApp.Components;
 using StudentTrackerApp.Repositories;
+using StudentTrackerApp.Repositories.OldStuff;
 using StudentTrackerApp.Services;
 
 namespace StudentTrackerApp
 {
-    public class Program
+	public class Program
     {
         public static void Main(string[] args)
         {
@@ -18,8 +19,7 @@ namespace StudentTrackerApp
 			builder.Services.AddDbContext<ApplicationDbContext>(options =>
 	            options.UseSqlite("Data Source=Data/StudentTracker.db"));
 
-            builder.Services.AddScoped<IStudentRepository, DbStudentRepository>();
-            builder.Services.AddScoped<ITeacherRepository, DbTeacherRepository>();
+            builder.Services.AddScoped<IUserRepository, DbUserRepository>();
             builder.Services.AddScoped<IStudentTeacherRepository, DbStudentTeacherRepository>();
 
             var app = builder.Build();

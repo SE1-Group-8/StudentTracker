@@ -7,20 +7,19 @@
 	{
 		public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
 
-		public DbSet<Student> StudentDb { get; set; }
-        public DbSet<Teacher> TeacherDb { get; set; }
+		public DbSet<User> UserDb { get; set; }
         public DbSet<StudentTeacher> StudentTeacherDb { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Models.Student>().HasData(
-                new Models.Student { Id = 1, FirstName = "Bobby", LastName = "Hill", Email = "bobbyhill@etsu.edu", Password = "Password" }
+            modelBuilder.Entity<Models.User>().HasData(
+                new Models.User { Id = 1, FirstName = "Bobby", LastName = "Hill", Email = "bobbyhill@etsu.edu", Password = "Password", UserType = "Student" }
             );
-			modelBuilder.Entity<Models.Teacher>().HasData(
-				new Models.Teacher { Id = 1, FirstName = "John", LastName = "Teach", Email = "johnteach@etsu.edu", Password = "Password" }
+			modelBuilder.Entity<Models.User>().HasData(
+				new Models.User { Id = 2, FirstName = "John", LastName = "Teach", Email = "johnteach@etsu.edu", Password = "Password", UserType="Teacher" }
 			);
 			modelBuilder.Entity<Models.StudentTeacher>().HasData(
-				new Models.StudentTeacher { Id = 1, StudentId = 1, TeacherId = 1 }
+				new Models.StudentTeacher { Id = 1, StudentId = 1, TeacherId = 2 }
 			);
 		}
     }
