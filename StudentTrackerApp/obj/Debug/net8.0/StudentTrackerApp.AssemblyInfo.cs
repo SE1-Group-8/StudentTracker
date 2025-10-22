@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("StudentTrackerApp")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+02fe499c8eb01c60825490fed092e326d722e2ff")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+27d0ced830127c6e90dc69607e8848ddfe4a9e80")]
 [assembly: System.Reflection.AssemblyProductAttribute("StudentTrackerApp")]
 [assembly: System.Reflection.AssemblyTitleAttribute("StudentTrackerApp")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
