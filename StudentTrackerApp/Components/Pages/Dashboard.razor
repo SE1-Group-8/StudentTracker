@@ -1,0 +1,98 @@
+@page "/userDashboard"
+@attribute [StreamRendering]
+@using Repositories
+@using Models
+@inject IUserRepository UserRepo
+@inject IStudentTeacherRepository StudentTeacherRepo
+<PageTitle>Dashboard</PageTitle>
+
+<div>
+    <h1> Welcome @user.FirstName @user.LastName </h1>
+</div>
+@*
+<div>
+    <table class="Table">
+        <thead>
+            <tr>Notification</tr>
+        </thead>
+        <tbody>
+            @foreach(string noti in user.Notifications){
+                <tr>
+                    <td>@noti</td>
+                </tr>
+            }
+            
+        </tbody>
+    </table>
+</div>
+*@
+<div>
+    <table class="Table">
+        <thead>
+            <tr>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>E-mail</th>
+                @if(!isStudent){
+                    <th>Location</th>
+                    <th>Check In Time</th>
+                    <th>Check Out Time</th>
+                }
+            </tr>
+        </thead>
+        <tbody>
+            @foreach(var person in connections){
+                <tr>
+                    <td>@person.FirstName</td>
+                    <td>@person.LastName</td>
+                    <td>@person.Email</td>
+                    @if(person is Student student){
+                        <td>@student.Location</td>
+                        <td>@student.CheckInTime</td>
+                        <td>@student.CheckOutTime</td>
+                    }
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@if(isStudent){
+    <div>
+        <h3>Location</h3>
+        <input type="text" @bind="locationInput" placeholder="Enter Location..." class="form-control"/>
+        <btn class="btn btn-primary" @onclick="SetLocation">Enter Location</btn>
+    </div>
+}
+
+@code{
+    private User user = new User();
+    private bool isStudent = false;
+    private List<User> connections = new List<User>();
+    private string locationInput;
+
+    private void SetLocation(){
+        if(user is Student student){
+            student.Location = locationInput;
+        }
+    }
+
+    protected override async Task OnInitializedAsync(){
+        user = await UserRepo.ReadUserAsync(1);
+        isStudent = user is Student;
+        List<int> connectionIDs = new List<int>();
+        
+        if(!isStudent){
+            connectionIDs = await StudentTeacherRepo.GetStudentsByTeacherIdAsync(2);
+        }
+        else { 
+            connectionIDs = await StudentTeacherRepo.GetTeachersByStudentIdAsync(2);
+        }
+
+        foreach(int person in connectionIDs){
+            connections.Add(await UserRepo.ReadUserAsync(person));
+        }
+    }
+
+
+}

@@ -30,6 +30,10 @@ StudentTrackerApp\obj\project.assets.json
 StudentTrackerApp\obj\project.nuget.cache
 StudentTrackerApp\obj\StudentTrackerApp.csproj.nuget.dgspec.json
 StudentTrackerApp\obj\StudentTrackerApp.csproj.nuget.g.props
+StudentTrackerApp/obj/*
+StudentTrackerApp/bin/*
+StudentTrackerApp/Data/*.db-shm
+StudentTrackerApp/Data/*.db-wal
 
 # User-specific files
 *.rsuser
@@ -444,20 +448,6 @@ FodyWeavers.xsd
 *.msix
 *.msm
 *.msp
-StudentTrackerApp/obj/Debug/net8.0/StudentTrackerApp.AssemblyInfo.cs
-StudentTrackerApp/obj/Debug/net8.0/StudentTrackerApp.AssemblyInfoInputs.cache
-StudentTrackerApp/obj/Debug/net8.0/StudentTrackerApp.assets.cache
-StudentTrackerApp/obj/Debug/net8.0/StudentTrackerApp.GeneratedMSBuildEditorConfig.editorconfig
-StudentTrackerApp/obj/Debug/net8.0/StudentTrackerApp.AssemblyInfo.cs
-StudentTrackerApp/obj/Debug/net8.0/StudentTrackerApp.AssemblyInfoInputs.cache
-StudentTrackerApp/obj/Debug/net8.0/StudentTrackerApp.assets.cache
-StudentTrackerApp/obj/Debug/net8.0/StudentTrackerApp.GeneratedMSBuildEditorConfig.editorconfig
 *.editorconfig
 *.cache
-StudentTrackerApp/obj/Debug/net8.0/StudentTrackerApp.AssemblyInfo.cs
-StudentTrackerApp/obj/Debug/net8.0/StudentTrackerApp.AssemblyInfo.cs
-StudentTrackerApp/obj/Debug/net8.0/StudentTrackerApp.AssemblyInfoInputs.cache
-StudentTrackerApp/obj/Debug/net8.0/StudentTrackerApp.assets.cache
-StudentTrackerApp/obj/Debug/net8.0/StudentTrackerApp.GeneratedMSBuildEditorConfig.editorconfig
-StudentTrackerApp/obj/Debug/net8.0/StudentTrackerApp.GeneratedMSBuildEditorConfig.editorconfig
-StudentTrackerApp/obj/Debug/net8.0/StudentTrackerApp.AssemblyInfo.cs
+
