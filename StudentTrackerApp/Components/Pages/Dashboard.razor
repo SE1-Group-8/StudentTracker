@@ -4,6 +4,8 @@
 @using Models
 @inject IUserRepository UserRepo
 @inject IStudentTeacherRepository StudentTeacherRepo
+@rendermode InteractiveServer
+
 <PageTitle>Dashboard</PageTitle>
 
 <div>
@@ -57,11 +59,37 @@
     </table>
 </div>
 
+
 @if(isStudent){
     <div>
         <h3>Location</h3>
-        <input type="text" @bind="locationInput" placeholder="Enter Location..." class="form-control"/>
-        <btn class="btn btn-primary" @onclick="SetLocation">Enter Location</btn>
+        @if(!locationDisabled){
+            <input type="text" @bind="locationInput" placeholder="Enter Location..." class="form-control"/>
+            <btn class="btn btn-primary" @onclick="() => SetLocation(locationInput)">Enter Location</btn>
+        }
+        <p>@studentUser.Location</p>
+
+        <h3>Check-In/Out</h3>
+        @if(!checkInDisabled){
+            <btn class="btn btn-secondary" @onclick="CheckIn">Check-In</btn>
+        }
+        @if(!checkOutDisabled){
+        <btn class="btn btn-danger" @onclick="CheckOut">Check-Out</btn>
+        }
+        <table class="Table">
+            <thead>
+                <tr>
+                    <th>Check-In Time</th>
+                    <th>Check-Out Time</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>@studentUser.CheckInTime</td>
+                    <td>@studentUser.CheckOutTime</td>
+                </tr>
+            </tbody>
+        </table>
     </div>
 }
 
@@ -70,29 +98,44 @@
     private bool isStudent = false;
     private List<User> connections = new List<User>();
     private string locationInput;
+    private Student? studentUser;
+    private bool locationDisabled = false;
+    private bool checkInDisabled = false;
+    private bool checkOutDisabled = true;
 
-    private void SetLocation(){
-        if(user is Student student){
-            student.Location = locationInput;
-        }
+    private void SetLocation(string inLocation){
+        studentUser.Location = inLocation;
+        locationDisabled = true;
+    }
+
+    private void CheckIn(){
+        studentUser.CheckInTime = DateTime.Now.ToString("HH:mm");
+        checkInDisabled = true;
+        checkOutDisabled = false;
+    }
+
+    private void CheckOut(){
+        studentUser.CheckOutTime = DateTime.Now.ToString("HH:mm");
+        checkInDisabled = false;
+        checkOutDisabled = true;
+        locationDisabled = false;
     }
 
     protected override async Task OnInitializedAsync(){
         user = await UserRepo.ReadUserAsync(1);
-        isStudent = user is Student;
         List<int> connectionIDs = new List<int>();
         
-        if(!isStudent){
-            connectionIDs = await StudentTeacherRepo.GetStudentsByTeacherIdAsync(2);
+        if(user.UserType.ToLower() == "student"){
+            isStudent = true;
+            studentUser = new Student(user);
+            connectionIDs = await StudentTeacherRepo.GetTeachersByStudentIdAsync(studentUser.Id);
         }
         else { 
-            connectionIDs = await StudentTeacherRepo.GetTeachersByStudentIdAsync(2);
+            connectionIDs = await StudentTeacherRepo.GetTeachersByStudentIdAsync(1);
         }
 
         foreach(int person in connectionIDs){
             connections.Add(await UserRepo.ReadUserAsync(person));
         }
     }
-
-
 }
