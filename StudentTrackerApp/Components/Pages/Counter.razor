@@ -1,10 +1,12 @@
 ﻿@page "/counter"
 @attribute [StreamRendering]
 @rendermode InteractiveServer
+@using Microsoft.EntityFrameworkCore.Metadata.Internal
 @using Repositories
 @using Models
 @inject IUserRepository userrepo
 @inject IStudentTeacherRepository studentteacherrepo
+@inject NavigationManager Navigation
 
 Create an Account
 <br />
@@ -41,6 +43,9 @@ Create Password: <input @bind='password'type="text" name="password" />
         
 
         await userrepo.CreateUserAsync(newUser);
+
+        await Task.Delay(5000);
+        Navigation.NavigateTo("");
     }
 
 }
