@@ -91,17 +91,26 @@
             </tbody>
         </table>
     </div>
-}
+    } else{
+    <div>
+        <h3>Notification</h3>
+        <input type="text" @bind="notiString" placeholder="Enter Notification..." class="form-control"/>
+        <btn class="btn btn-primary" @onclick="() => PushNotification(notiString)">Push Notification</btn>
+    </div>
+    }
 
 @code{
     private User user = new User();
     private bool isStudent = false;
     private List<User> connections = new List<User>();
     private string locationInput;
+    private string notiString;
     private Student? studentUser;
     private bool locationDisabled = false;
     private bool checkInDisabled = false;
     private bool checkOutDisabled = true;
+
+    private int USERID = 2;
 
     private void SetLocation(string inLocation){
         studentUser.Location = inLocation;
@@ -121,8 +130,12 @@
         locationDisabled = false;
     }
 
+    private void PushNotification(string inMsg){
+        // Do smth here
+    }
+
     protected override async Task OnInitializedAsync(){
-        user = await UserRepo.ReadUserAsync(1);
+        user = await UserRepo.ReadUserAsync(USERID);
         List<int> connectionIDs = new List<int>();
         
         if(user.UserType.ToLower() == "student"){
@@ -131,7 +144,7 @@
             connectionIDs = await StudentTeacherRepo.GetTeachersByStudentIdAsync(studentUser.Id);
         }
         else { 
-            connectionIDs = await StudentTeacherRepo.GetTeachersByStudentIdAsync(1);
+            connectionIDs = await StudentTeacherRepo.GetStudentsByTeacherIdAsync(user.Id);
         }
 
         foreach(int person in connectionIDs){
