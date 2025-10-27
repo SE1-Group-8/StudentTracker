@@ -20,6 +20,9 @@ namespace StudentTrackerApp
 
             builder.Services.AddScoped<IUserRepository, DbUserRepository>();
             builder.Services.AddScoped<IStudentTeacherRepository, DbStudentTeacherRepository>();
+            builder.Services.AddScoped<IMessageRepository, DbMessageRepository>();
+
+            builder.Services.AddScoped<UserSession>();
 
             var app = builder.Build();
 
