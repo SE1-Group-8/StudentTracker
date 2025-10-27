@@ -1,20 +1,47 @@
 ﻿@page "/counter"
-@rendermode InteractiveServer
-
+@attribute [StreamRendering]
+@using Repositories
+@using Models
+@inject IUserRepository userrepo
+@inject IStudentTeacherRepository studentteacherrepo
 Create an Account
 <br />
-Teacher or Student:<input type="radio" name="userType" value="Student" />Student
-<input type="radio" name="userType" value="Teacher" />Teacher
+Teacher or Student:<input @bind='userType'type="text" name="userType"/>
 <br />
+User ID:<input @bind='userID'placeholder = ""type="text" name="userID" />
 <br />
-User ID:<input type="text" name="userID" />
+First Name: <input @bind='fName' type="text" name="firstName" />
 <br />
-First Name: <input type="text" name="firstName" />
+Last Name:  <input @bind='lName'type="text" name="lastName" />
 <br />
-Last Name:  <input type="text" name="lastName" />
+Email: <input @bind='email'type="text" name="email" />
 <br />
-Email: <input type="text" name="email" />
+Create Password: <input @bind='password'type="text" name="password" />
 <br />
-Create Password: <input type="text" name="password" />
-<br />
-Your Teachers ID: <input type="text" name="teacherID" />
+Your Teachers ID (INT ONLY): <input @binf='teacherID'type="text" name="teacherID" />
+
+<button @onclick="SubmitUser">Submit</button>
+
+@code{
+    string userID = string.Empty;
+    string fName = string.Empty;
+    string lName = string.Empty;
+    string email = string.Empty;
+    int teacherID = 0;
+    string password = string.Empty;
+    string userType = string.Empty;
+    private User newUser = new();
+    private async Task SubmitUser()
+    {
+        //newUser = User(userID,fName,lName,email,userType);
+        newUser.FirstName = fName;
+        newUser.LastName = lName;
+        newUser.Email = email;
+        newUser.UserType = userType;
+        newUser.Password = password;
+        newUser.Id = teacherID;
+
+        await userrepo.CreateUserAsync(newUser);
+    }
+
+}
