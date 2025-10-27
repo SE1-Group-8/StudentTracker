@@ -1,21 +1,54 @@
 ﻿@page "/"
+@attribute [StreamRendering]
+@rendermode InteractiveServer
+@using Repositories
+@using Services
+@inject IUserRepository userrepo
+@inject UserSession session
+@inject NavigationManager NavManager
 
 <PageTitle>Login</PageTitle>
 
 <h1>Login</h1>
 
-Username: 
-<input type="text" name="username" />
-<br />
-Password: 
-<input type="password" name="password" />
-<br />
-Please select from the following
-<br />
-<input type="radio" name="userType" value="Student" />Student
-<br />
-<input type="radio" name="userType" value="Teacher" />Teacher
-<br />
-<input type="radio" name="userType" value="Admin" />Admin
-<br />
-<button type="submit">Login</button>
+<EditForm Model="@loginModel" OnValidSubmit="HandleLogin" FormName="LoginForm">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <InputText @bind-Value="loginModel.Email" placeholder="Email" />
+    <InputText @bind-Value="loginModel.Password" placeholder="Password" type="password" />
+    <button type="submit">Login</button>
+</EditForm>
+
+@if (!string.IsNullOrEmpty(Error))
+{
+    <p style="color:red">@Error</p>
+}
+
+@code
+{
+    private LoginModel loginModel = new();
+    private string Error { get; set; }
+    private async Task HandleLogin()
+    {
+        var users = await userrepo.ReadAllUsersAsync();
+        var email = loginModel.Email?.Trim().ToLowerInvariant();
+        var password = loginModel.Password?.Trim();
+        var user = users.FirstOrDefault(u =>
+        u.Email.Trim().ToLowerInvariant() == email &&
+        u.Password.Trim() == password);
+        if (user == null)
+        {
+            Error = $"Invalid email or password";
+            return;
+        }
+        session.Id = user.Id;
+        session.Email = user.Email;
+        session.UserType = user.UserType;
+        NavManager.NavigateTo("/userDashboard");
+    }
+    public class LoginModel
+    {
+        public string Email { get; set; }
+        public string Password { get; set; }
+    }
+}
