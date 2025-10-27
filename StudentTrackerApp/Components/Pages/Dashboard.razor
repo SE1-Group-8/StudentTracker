@@ -4,28 +4,13 @@
 @using Models
 @inject IUserRepository UserRepo
 @inject IStudentTeacherRepository StudentTeacherRepo
+@inject IJSRuntime JS
 <PageTitle>Dashboard</PageTitle>
 
 <div>
-    <h1> Welcome @user.FirstName @user.LastName </h1>
+    <h1>Welcome @user.FirstName @user.LastName</h1>
 </div>
-@*
-<div>
-    <table class="Table">
-        <thead>
-            <tr>Notification</tr>
-        </thead>
-        <tbody>
-            @foreach(string noti in user.Notifications){
-                <tr>
-                    <td>@noti</td>
-                </tr>
-            }
-            
-        </tbody>
-    </table>
-</div>
-*@
+
 <div>
     <table class="Table">
         <thead>
@@ -33,7 +18,8 @@
                 <th>First Name</th>
                 <th>Last Name</th>
                 <th>E-mail</th>
-                @if(!isStudent){
+                @if (!isStudent)
+                {
                     <th>Location</th>
                     <th>Check In Time</th>
                     <th>Check Out Time</th>
@@ -41,12 +27,14 @@
             </tr>
         </thead>
         <tbody>
-            @foreach(var person in connections){
+            @foreach (var person in connections)
+            {
                 <tr>
                     <td>@person.FirstName</td>
                     <td>@person.LastName</td>
                     <td>@person.Email</td>
-                    @if(person is Student student){
+                    @if (person is Student student)
+                    {
                         <td>@student.Location</td>
                         <td>@student.CheckInTime</td>
                         <td>@student.CheckOutTime</td>
@@ -57,42 +45,83 @@
     </table>
 </div>
 
-@if(isStudent){
-    <div>
+<hr />
+
+<h3>Geolocation</h3>
+<div>
+    <label>Latitude:</label>
+    <input @bind="Latitude" readonly class="form-control" style="width:200px; display:inline-block;" />
+
+    <label style="margin-left:10px;">Longitude:</label>
+    <input @bind="Longitude" readonly class="form-control" style="width:200px; display:inline-block;" />
+</div>
+
+<button class="btn btn-primary mt-2" @onclick="GetLocation">Get My Location</button>
+
+@if (isStudent)
+{
+    <div class="mt-4">
         <h3>Location</h3>
-        <input type="text" @bind="locationInput" placeholder="Enter Location..." class="form-control"/>
-        <btn class="btn btn-primary" @onclick="SetLocation">Enter Location</btn>
+        <input type="text" @bind="locationInput" placeholder="Enter Location..." class="form-control" />
+        <button class="btn btn-success mt-2" @onclick="SetLocation">Enter Location</button>
     </div>
 }
 
-@code{
+@code {
     private User user = new User();
     private bool isStudent = false;
-    private List<User> connections = new List<User>();
-    private string locationInput;
+    private List<User> connections = new();
+    private string locationInput = string.Empty;
 
-    private void SetLocation(){
-        if(user is Student student){
+    private string? Latitude { get; set; }
+    private string? Longitude { get; set; }
+
+    public record GeolocationCoordinates(double Latitude, double Longitude);
+
+    private async Task GetLocation()
+    {
+        try
+        {
+            await JS.InvokeVoidAsync("console.log", "Attempting to get location...");
+            var coords = await JS.InvokeAsync<GeolocationCoordinates>("getUserLocation");
+            Latitude = coords.Latitude.ToString("F6");
+            Longitude = coords.Longitude.ToString("F6");
+        }
+        catch (Exception ex)
+        {
+            Latitude = "Error";
+            Longitude = ex.Message;
+        }
+    }
+
+
+    private void SetLocation()
+    {
+        if (user is Student student)
+        {
             student.Location = locationInput;
         }
     }
 
-    protected override async Task OnInitializedAsync(){
+    protected override async Task OnInitializedAsync()
+    {
         user = await UserRepo.ReadUserAsync(1);
         isStudent = user is Student;
-        List<int> connectionIDs = new List<int>();
-        
-        if(!isStudent){
+        List<int> connectionIDs = new();
+
+        if (!isStudent)
+        {
             connectionIDs = await StudentTeacherRepo.GetStudentsByTeacherIdAsync(2);
         }
-        else { 
+        else
+        {
             connectionIDs = await StudentTeacherRepo.GetTeachersByStudentIdAsync(2);
         }
 
-        foreach(int person in connectionIDs){
-            connections.Add(await UserRepo.ReadUserAsync(person));
+        foreach (int personId in connectionIDs)
+        {
+            connections.Add(await UserRepo.ReadUserAsync(personId));
         }
     }
-
-
 }
+
