@@ -21,6 +21,8 @@ namespace StudentTrackerApp
             builder.Services.AddScoped<IUserRepository, DbUserRepository>();
             builder.Services.AddScoped<IStudentTeacherRepository, DbStudentTeacherRepository>();
 
+            builder.Services.AddScoped<UserSession>();
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
