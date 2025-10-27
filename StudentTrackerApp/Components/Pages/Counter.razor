@@ -4,6 +4,7 @@
 @using Models
 @inject IUserRepository userrepo
 @inject IStudentTeacherRepository studentteacherrepo
+
 Create an Account
 <br />
 Teacher or Student:<input @bind='userType'type="text" name="userType"/>
@@ -18,7 +19,6 @@ Email: <input @bind='email'type="text" name="email" />
 <br />
 Create Password: <input @bind='password'type="text" name="password" />
 <br />
-Your Teachers ID (INT ONLY): <input @binf='teacherID'type="text" name="teacherID" />
 
 <button @onclick="SubmitUser">Submit</button>
 
@@ -27,19 +27,17 @@ Your Teachers ID (INT ONLY): <input @binf='teacherID'type="text" name="teacherID
     string fName = string.Empty;
     string lName = string.Empty;
     string email = string.Empty;
-    int teacherID = 0;
     string password = string.Empty;
     string userType = string.Empty;
-    private User newUser = new();
-    private async Task SubmitUser()
+    public User newUser = new();
+    public async Task SubmitUser()
     {
-        //newUser = User(userID,fName,lName,email,userType);
         newUser.FirstName = fName;
         newUser.LastName = lName;
         newUser.Email = email;
         newUser.UserType = userType;
         newUser.Password = password;
-        newUser.Id = teacherID;
+        
 
         await userrepo.CreateUserAsync(newUser);
     }
