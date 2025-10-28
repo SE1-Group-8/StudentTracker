@@ -2,9 +2,11 @@
 {
     public class UserSession
     {
-        public int? Id {  get; set; }
-        public string? Email { get; set; }
-        public string? UserType { get; set; }
-        public bool IsLoggedIn => Id.HasValue;
+        public int Id {  get; set; }
+        public string Email { get; set; }
+        public string UserType { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public bool IsLoggedIn => Id > 0;
     }
 }
