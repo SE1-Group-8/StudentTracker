@@ -4,28 +4,15 @@
 @using Models
 @inject IUserRepository UserRepo
 @inject IStudentTeacherRepository StudentTeacherRepo
+@inject IJSRuntime JS
+@rendermode InteractiveServer
+
 <PageTitle>Dashboard</PageTitle>
 
 <div>
-    <h1> Welcome @user.FirstName @user.LastName </h1>
+    <h1>Welcome @user.FirstName @user.LastName</h1>
 </div>
-@*
-<div>
-    <table class="Table">
-        <thead>
-            <tr>Notification</tr>
-        </thead>
-        <tbody>
-            @foreach(string noti in user.Notifications){
-                <tr>
-                    <td>@noti</td>
-                </tr>
-            }
-            
-        </tbody>
-    </table>
-</div>
-*@
+
 <div>
     <table class="Table">
         <thead>
@@ -33,7 +20,8 @@
                 <th>First Name</th>
                 <th>Last Name</th>
                 <th>E-mail</th>
-                @if(!isStudent){
+                @if (!isStudent)
+                {
                     <th>Location</th>
                     <th>Check In Time</th>
                     <th>Check Out Time</th>
@@ -41,12 +29,14 @@
             </tr>
         </thead>
         <tbody>
-            @foreach(var person in connections){
+            @foreach (var person in connections)
+            {
                 <tr>
                     <td>@person.FirstName</td>
                     <td>@person.LastName</td>
                     <td>@person.Email</td>
-                    @if(person is Student student){
+                    @if (person is Student student)
+                    {
                         <td>@student.Location</td>
                         <td>@student.CheckInTime</td>
                         <td>@student.CheckOutTime</td>
@@ -57,42 +47,139 @@
     </table>
 </div>
 
-@if(isStudent){
-    <div>
+<hr />
+
+
+@if (isStudent)
+{
+    <div class="mt-4">
         <h3>Location</h3>
-        <input type="text" @bind="locationInput" placeholder="Enter Location..." class="form-control"/>
-        <btn class="btn btn-primary" @onclick="SetLocation">Enter Location</btn>
+        @if(!locationDisabled){
+            <input type="text" @bind="locationInput" placeholder="Enter Location..." class="form-control" />
+            <button class="btn btn-success mt-2" @onclick="() => SetLocation(locationInput)">Enter Location</button>
+        }
+    </div>
+    <div>
+        <h3>Check In/Out</h3>
+        @if(!checkInDisabled){
+            <btn class="btn btn-primary" @onclick="CheckIn">Check In</btn>
+        }
+        @if(!checkOutDisabled){
+            <btn class="btn btn-danger" @onclick="CheckOut">Check Out</btn>
+        }
+        <table class="Table">
+            <thead>
+                <tr>
+                    <th>Location</th>
+                    <th>Check In Time</th>
+                    <th>Check Out Time</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>@studentUser.Location</td>
+                    <td>@studentUser.CheckInTime</td>
+                    <td>@studentUser.CheckOutTime</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+} 
+else {
+    <h3>Geolocation</h3>
+    <div>
+        <label>Latitude:</label>
+        <input @bind="Latitude" readonly class="form-control" style="width:200px; display:inline-block;" />
+
+        <label style="margin-left:10px;">Longitude:</label>
+        <input @bind="Longitude" readonly class="form-control" style="width:200px; display:inline-block;" />
+    </div>
+
+    <button class="btn btn-primary mt-2" @onclick="GetLocation">Get My Location</button>
+    
+    <h3>Notification</h3>
+    <div>
+        <input type="text" @bind="notiString" placeholder="Enter Notification..." class="form-control"/>
+        <btn class="btn btn-primary" @onclick="() => PushNotification(notiString)">Push Notification</btn>
     </div>
 }
-
-@code{
+        
+@code {
     private User user = new User();
     private bool isStudent = false;
-    private List<User> connections = new List<User>();
-    private string locationInput;
+    private List<User> connections = new();
+    private string locationInput = string.Empty;
+    private string notiString = string.Empty;
+    private bool locationDisabled = false;
+    private bool checkInDisabled = false;
+    private bool checkOutDisabled = true;
+    private Student? studentUser;
+    private string? Latitude { get; set; }
+    private string? Longitude { get; set; }
 
-    private void SetLocation(){
-        if(user is Student student){
-            student.Location = locationInput;
+    public record GeolocationCoordinates(double Latitude, double Longitude);
+
+    private int USERID = 1;
+
+    private async Task GetLocation()
+    {
+        try
+        {
+            await JS.InvokeVoidAsync("console.log", "Attempting to get location...");
+            var coords = await JS.InvokeAsync<GeolocationCoordinates>("getUserLocation");
+            Latitude = coords.Latitude.ToString("F6");
+            Longitude = coords.Longitude.ToString("F6");
+        }
+        catch (Exception ex)
+        {
+            Latitude = "Error";
+            Longitude = ex.Message;
         }
     }
 
-    protected override async Task OnInitializedAsync(){
-        user = await UserRepo.ReadUserAsync(1);
-        isStudent = user is Student;
+    private void SetLocation(string inLocation)
+    {
+        studentUser.Location = inLocation;
+        locationDisabled = true;
+    }
+
+    private void CheckIn(){
+        studentUser.CheckInTime = DateTime.Now.ToString("HH:mm");
+        checkInDisabled = true;
+        checkOutDisabled = false;
+    }
+
+    private void CheckOut(){
+        studentUser.CheckOutTime = DateTime.Now.ToString("HH:mm");
+        checkOutDisabled = true;
+        checkInDisabled = false;
+        locationDisabled = false;
+    }
+
+    private void PushNotification(string inMsg){
+        //TODO
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        user = await UserRepo.ReadUserAsync(USERID);
         List<int> connectionIDs = new List<int>();
-        
-        if(!isStudent){
-            connectionIDs = await StudentTeacherRepo.GetStudentsByTeacherIdAsync(2);
+
+        if (user.UserType.ToLower() == "student")
+        {
+            isStudent = true;
+            studentUser = new Student(user);
+            connectionIDs = await StudentTeacherRepo.GetTeachersByStudentIdAsync(studentUser.Id);
         }
-        else { 
-            connectionIDs = await StudentTeacherRepo.GetTeachersByStudentIdAsync(2);
+        else
+        {
+            connectionIDs = await StudentTeacherRepo.GetStudentsByTeacherIdAsync(user.Id);
         }
 
-        foreach(int person in connectionIDs){
-            connections.Add(await UserRepo.ReadUserAsync(person));
+        foreach (int personId in connectionIDs)
+        {
+            connections.Add(await UserRepo.ReadUserAsync(personId));
         }
     }
-
-
 }
+
