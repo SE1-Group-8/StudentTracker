@@ -1,8 +1,7 @@
-﻿window.getUserLocation = async function () {
+﻿// wwwroot/js/geoLocation.js
+window.blazorGetLocation = () => {
     return new Promise((resolve, reject) => {
-        if (!navigator.geolocation) {
-            reject('Geolocation not supported by this browser.');
-        } else {
+        if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
                 position => {
                     resolve({
@@ -14,6 +13,8 @@
                     reject(error.message);
                 }
             );
+        } else {
+            reject("Geolocation is not supported by this browser.");
         }
     });
 };
