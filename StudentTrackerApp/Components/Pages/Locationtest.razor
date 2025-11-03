@@ -1,24 +1,33 @@
 ﻿@page "/location"
 @inject IJSRuntime JS
+@using Services
+@using Models
+@using Repositories
+@inject UserSession Session
+@inject DbCheckInRepository CheckInRepo
 @rendermode InteractiveServer
 
-<h3>Location Check-In System</h3>
+<h3>Student Check-In System</h3>
 
 <div class="d-flex gap-2 mt-3">
     <button class="btn btn-success"
-            @onclick="CheckIn"
-            disabled="@isCheckedIn">
+            @onclick="CheckInAsync"
+            disabled="@(!IsUserLoggedIn || isCheckedIn)">
         Check In
     </button>
 
     <button class="btn btn-danger"
-            @onclick="CheckOut"
-            disabled="@(isLoading || !isCheckedIn)">
+            @onclick="CheckOutAsync"
+            disabled="@(!IsUserLoggedIn || isLoading || !isCheckedIn)">
         Check Out
     </button>
 </div>
 
-@if (!string.IsNullOrEmpty(errorMessage))
+@if (!IsUserLoggedIn)
+{
+    <p class="text-warning mt-3">Please sign in to use the check-in system.</p>
+}
+else if (!string.IsNullOrEmpty(errorMessage))
 {
     <p class="text-danger mt-3">Error: @errorMessage</p>
 }
@@ -47,33 +56,88 @@ else
     private bool isLoading = false;
     private bool isCheckedIn = false;
     private DateTime? timestamp;
+    private bool IsUserLoggedIn => Session != null && Session.Id != 0;
 
-    private async Task CheckIn()
+    protected override async Task OnInitializedAsync()
     {
-        await GetLocation();
-        if (latitude.HasValue && longitude.HasValue)
+        if (IsUserLoggedIn)
         {
+            // Load active check-in if it exists
+            var activeCheckIn = await CheckInRepo.GetActiveCheckInAsync(Session.Id);
+            if (activeCheckIn != null && activeCheckIn.CheckOutTime == null)
+            {
+                isCheckedIn = true;
+                latitude = activeCheckIn.CheckInLatitude;
+                longitude = activeCheckIn.CheckInLongitude;
+                timestamp = activeCheckIn.CheckInTime;
+            }
+        }
+    }
+
+    private async Task CheckInAsync()
+    {
+        if (!IsUserLoggedIn) return;
+
+        // Prevent double check-ins
+        var existing = await CheckInRepo.GetActiveCheckInAsync(Session.Id);
+        if (existing != null && existing.CheckOutTime == null)
+        {
+            errorMessage = "You are already checked in.";
             isCheckedIn = true;
+            return;
         }
-    }
 
-    private async Task CheckOut()
-    {
-        await GetLocation();
+        await GetLocationAsync();
         if (latitude.HasValue && longitude.HasValue)
         {
-            isCheckedIn = false;
+            var log = new CheckInLog
+            {
+                UserId = Session.Id,
+                CheckInLatitude = latitude.Value,
+                CheckInLongitude = longitude.Value,
+                CheckInTime = DateTime.Now,
+                WithinRange = true
+            };
+
+            await CheckInRepo.CreateCheckInAsync(log);
+            isCheckedIn = true;
+            timestamp = log.CheckInTime;
         }
     }
 
-    private async Task GetLocation()
+    private async Task CheckOutAsync()
+    {
+        if (!IsUserLoggedIn) return;
+
+        await GetLocationAsync();
+        if (latitude.HasValue && longitude.HasValue)
+        {
+            var log = await CheckInRepo.GetActiveCheckInAsync(Session.Id);
+            if (log != null && log.CheckOutTime == null)
+            {
+                log.CheckOutLatitude = latitude.Value;
+                log.CheckOutLongitude = longitude.Value;
+                log.CheckOutTime = DateTime.Now;
+                log.WithinRange = IsWithinFiveMiles(
+                    log.CheckInLatitude, log.CheckInLongitude,
+                    log.CheckOutLatitude.Value, log.CheckOutLongitude.Value);
+
+                await CheckInRepo.UpdateCheckOutAsync(log);
+                isCheckedIn = false;
+            }
+            else
+            {
+                errorMessage = "No active check-in found.";
+            }
+        }
+    }
+
+    private async Task GetLocationAsync()
     {
         try
         {
             isLoading = true;
             errorMessage = null;
-            latitude = longitude = null;
-            timestamp = null;
             StateHasChanged();
 
             var result = await JS.InvokeAsync<LocationData>("blazorGetLocation");
@@ -90,6 +154,25 @@ else
             isLoading = false;
             StateHasChanged();
         }
+    }
+
+    private bool IsWithinFiveMiles(double lat1, double lon1, double lat2, double lon2)
+    {
+        double R = 3958.8; // Radius of Earth in miles
+        double dLat = (lat2 - lat1) * Math.PI / 180;
+        double dLon = (lon2 - lon1) * Math.PI / 180;
+
+        lat1 = lat1 * Math.PI / 180;
+        lat2 = lat2 * Math.PI / 180;
+
+        double a = Math.Pow(Math.Sin(dLat / 2), 2) +
+                   Math.Pow(Math.Sin(dLon / 2), 2) *
+                   Math.Cos(lat1) * Math.Cos(lat2);
+
+        double c = 2 * Math.Asin(Math.Sqrt(a));
+        double distance = R * c;
+
+        return distance <= 5.0;
     }
 
     private class LocationData
