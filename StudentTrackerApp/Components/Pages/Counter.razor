@@ -4,28 +4,34 @@
 @using Microsoft.EntityFrameworkCore.Metadata.Internal
 @using Repositories
 @using Models
+@using System.Runtime.InteropServices
 @inject IUserRepository userrepo
 @inject IStudentTeacherRepository studentteacherrepo
 @inject NavigationManager Navigation
 @if (showpage)
 {
-    <p>Create an Account</p>
-    <p>Teacher or Student</p><input @bind='userType'type="text" name="userType"/>
+    <p>Create an Account
+    <InputRadioGroup @bind-Value="userType">
+        <InputRadio Value='"Teacher"'>Teacher</InputRadio>Teacher
+        <InputRadio Value='"Student"'>Student</InputRadio>Student
+    </InputRadioGroup></p>
+    
+    //<p>Teacher or Student</p><input @bind='userType'type="text" name="userType"/>
+    <p>First Name: <input @bind='fName' type="text" name="firstName" /></p>
+    <p>Last Name:  <input @bind='lName'type="text" name="lastName" /></p>
+    <p>Email <input @bind='email'type="text" name="email" /></p>
+    <p>Create Password: <input @bind='password'type="text" name="password" /></p>
+    <br />
+    <button @onclick="SubmitUser">Submit</button>
 }
-Create an Account
-<br />
-Teacher or Student:<input @bind='userType'type="text" name="userType"/>
-<br />
-First Name: <input @bind='fName' type="text" name="firstName" />
-<br />
-Last Name:  <input @bind='lName'type="text" name="lastName" />
-<br />
-Email: <input @bind='email'type="text" name="email" />
-<br />
-Create Password: <input @bind='password'type="text" name="password" />
-<br />
 
-<button @onclick="SubmitUser">Submit</button>
+@if (!showpage)
+{
+    <p>Created! Redirecting....</p>
+}
+
+
+
 
 @code{
     string fName = string.Empty;
@@ -43,7 +49,6 @@ Create Password: <input @bind='password'type="text" name="password" />
         newUser.Email = email;
         newUser.UserType = userType;
         newUser.Password = password;
-        
 
         await userrepo.CreateUserAsync(newUser);
         showpage = false;
