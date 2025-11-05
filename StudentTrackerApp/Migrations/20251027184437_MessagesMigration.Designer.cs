@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using StudentTrackerApp.Services;
 
@@ -10,49 +11,14 @@ using StudentTrackerApp.Services;
 namespace StudentTrackerApp.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251027184437_MessagesMigration")]
+    partial class MessagesMigration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "9.0.10");
-
-            modelBuilder.Entity("StudentTrackerApp.Models.CheckInLog", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<double>("CheckInLatitude")
-                        .HasColumnType("REAL");
-
-                    b.Property<double>("CheckInLongitude")
-                        .HasColumnType("REAL");
-
-                    b.Property<DateTime>("CheckInTime")
-                        .HasColumnType("TEXT");
-
-                    b.Property<double?>("CheckOutLatitude")
-                        .HasColumnType("REAL");
-
-                    b.Property<double?>("CheckOutLongitude")
-                        .HasColumnType("REAL");
-
-                    b.Property<DateTime?>("CheckOutTime")
-                        .HasColumnType("TEXT");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<bool>("WithinRange")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("CheckInLogDb");
-                });
 
             modelBuilder.Entity("StudentTrackerApp.Models.Message", b =>
                 {
@@ -155,17 +121,6 @@ namespace StudentTrackerApp.Migrations
                             Password = "Password",
                             UserType = "Teacher"
                         });
-                });
-
-            modelBuilder.Entity("StudentTrackerApp.Models.CheckInLog", b =>
-                {
-                    b.HasOne("StudentTrackerApp.Models.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
                 });
 #pragma warning restore 612, 618
         }

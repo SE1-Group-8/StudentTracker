@@ -9,6 +9,8 @@
 
 		public DbSet<User> UserDb { get; set; }
         public DbSet<StudentTeacher> StudentTeacherDb { get; set; }
+		public DbSet<Message> MessageDb { get; set; }
+        public DbSet<CheckInLog> CheckInLogDb { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

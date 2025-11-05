@@ -1,5 +1,4 @@
 ﻿@page "/"
-@attribute [StreamRendering]
 @rendermode InteractiveServer
 @using Repositories
 @using Services
@@ -41,10 +40,15 @@
             Error = $"Invalid email or password";
             return;
         }
+
         session.Id = user.Id;
         session.Email = user.Email;
         session.UserType = user.UserType;
-        NavManager.NavigateTo("/userDashboard");
+        session.FirstName = user.FirstName;
+        session.LastName = user.LastName;
+
+        //NavManager.NavigateTo("/userDashboard");
+        NavManager.NavigateTo("/location"); // Testing location (Will change back to dashboard)
     }
     public class LoginModel
     {
