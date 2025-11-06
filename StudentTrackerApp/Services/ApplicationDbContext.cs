@@ -17,12 +17,18 @@
             modelBuilder.Entity<Models.User>().HasData(
                 new Models.User { Id = 1, FirstName = "Bobby", LastName = "Hill", Email = "bobbyhill@etsu.edu", Password = "Password", UserType = "Student" }
             );
-			modelBuilder.Entity<Models.User>().HasData(
+            modelBuilder.Entity<Models.User>().HasData(
+				new Models.User { Id = 3, FirstName = "Joseph", LastName = "Gribble", Email = "gribble@etsu.edu", Password = "Password", UserType = "Student" }
+			);
+            modelBuilder.Entity<Models.User>().HasData(
 				new Models.User { Id = 2, FirstName = "John", LastName = "Teach", Email = "johnteach@etsu.edu", Password = "Password", UserType="Teacher" }
 			);
 			modelBuilder.Entity<Models.StudentTeacher>().HasData(
 				new Models.StudentTeacher { Id = 1, StudentId = 1, TeacherId = 2 }
 			);
-		}
+            modelBuilder.Entity<Models.StudentTeacher>().HasData(
+				new Models.StudentTeacher { Id = 2, StudentId = 3, TeacherId = 2 }
+			);
+        }
     }
 }

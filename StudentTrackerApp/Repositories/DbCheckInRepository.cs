@@ -4,7 +4,7 @@ using StudentTrackerApp.Services;
 
 namespace StudentTrackerApp.Repositories
 {
-    public class DbCheckInRepository
+    public class DbCheckInRepository : ICheckInRepository
     {
         private readonly ApplicationDbContext _db;
 
@@ -31,6 +31,14 @@ namespace StudentTrackerApp.Repositories
         {
             _db.CheckInLogDb.Update(log);
             await _db.SaveChangesAsync();
+        }
+
+        public async Task<List<CheckInLog>> GetLogsByUserIdAsync(int userId)
+        {
+            return await _db.CheckInLogDb
+                .Where(l => l.UserId == userId)
+                .OrderByDescending(l => l.CheckInTime)
+                .ToListAsync();
         }
     }
 }
