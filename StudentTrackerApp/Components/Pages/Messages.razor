@@ -1,0 +1,97 @@
+﻿@page "/Messages"
+@attribute [StreamRendering]
+@using Repositories
+@using Models
+@using Services
+@rendermode InteractiveServer
+@inject IUserRepository userrepo
+@inject IStudentTeacherRepository studentteacherrepo
+@inject UserSession session
+@inject IMessageRepository messagerepo
+@inject NavigationManager nav
+
+
+<h3>Contacts</h3>
+<hr />
+@foreach (User contact in Contacts){
+    Message LastMessage = GetLastMessageForContact(contact);
+    <div @onclick="(() => RedirectToContactMessages(contact))">
+
+        <h5>@contact.FirstName @contact.LastName</h5>
+
+        @if (LastMessage != null){
+            @if (LastMessage.RecieverId == session.Id && !LastMessage.ReadByReciever) 
+            {
+                <p>
+                    <span style="color: red; font-size: xx-large">&bull;</span>
+                    <b>@LastMessage.MessageContent</b>
+                    <sub style="text-align:right">@LastMessage.DateTime</sub>
+                </p>
+            }
+            else
+            {
+                <p>
+                    @if (LastMessage.SenderId == session.Id){ <i>You sent: </i> }
+                    @LastMessage.MessageContent
+                    @if (LastMessage.ReadByReciever){
+                        <i> - seen </i>
+                    }
+                    else
+                    {
+                        <i> - delivered </i>
+                    }
+                    <sub style="text-align:right">@LastMessage.DateTime</sub>
+                </p>
+            }
+        }
+        else
+        {
+            <p><i>No Messages with this contact yet...</i></p>
+        }
+        <hr />
+    </div>
+}
+
+
+
+
+
+@code {
+    private List<User> Contacts = new List<User>();
+    private ICollection<Message> UserMessages = new List<Message>();
+    private ICollection<Message> RecievedMessages = new List<Message>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        List<int> userids = new List<int>();
+        if (session.UserType == "Teacher"){
+            userids = await studentteacherrepo.GetStudentsByTeacherIdAsync(session.Id);
+        }
+        else{
+            userids = await studentteacherrepo.GetTeachersByStudentIdAsync(session.Id);
+        }
+        foreach (int id in userids){
+            User retrievedUser = await userrepo.ReadUserAsync(id);
+            if (retrievedUser != null){
+                Contacts.Add(retrievedUser);
+            }
+        }
+
+        UserMessages = await messagerepo.ReadAllMessagesByUserIdAsync(session.Id);
+        RecievedMessages = UserMessages.Where(m => m.RecieverId == session.Id).ToList();
+
+    }
+
+    private Message GetLastMessageForContact(User contact)
+    {
+        List<Message> contactsMessages = UserMessages.Where(m => m.SenderId == contact.Id || m.RecieverId == contact.Id).ToList();
+
+        Message LastMessage = contactsMessages.OrderByDescending(m => m.DateTime).FirstOrDefault();
+        return LastMessage;
+    }
+
+    private void RedirectToContactMessages(User contact)
+    {
+        nav.NavigateTo($"/messages/{contact.Id}");
+    }
+}
