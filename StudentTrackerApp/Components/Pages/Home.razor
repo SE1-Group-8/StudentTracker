@@ -2,9 +2,12 @@
 @rendermode InteractiveServer
 @using Repositories
 @using Services
+@using Models
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
 @inject IUserRepository userrepo
 @inject UserSession session
 @inject NavigationManager NavManager
+@inject ProtectedSessionStorage ProtectedSessionStore
 
 <PageTitle>Login</PageTitle>
 
@@ -18,23 +21,20 @@
     <button type="submit">Login</button>
 </EditForm>
 
-@if (!string.IsNullOrEmpty(Error))
-{
-    <p style="color:red">@Error</p>
-}
 
 @code
 {
     private LoginModel loginModel = new();
     private string Error { get; set; }
+
     private async Task HandleLogin()
     {
         var users = await userrepo.ReadAllUsersAsync();
         var email = loginModel.Email?.Trim().ToLowerInvariant();
         var password = loginModel.Password?.Trim();
         var user = users.FirstOrDefault(u =>
-        u.Email.Trim().ToLowerInvariant() == email &&
-        u.Password.Trim() == password);
+            u.Email.Trim().ToLowerInvariant() == email &&
+            u.Password.Trim() == password);
         if (user == null)
         {
             Error = $"Invalid email or password";
@@ -47,9 +47,11 @@
         session.FirstName = user.FirstName;
         session.LastName = user.LastName;
 
-        //NavManager.NavigateTo("/userDashboard");
-        NavManager.NavigateTo("/location"); // Testing location (Will change back to dashboard)
+        await ProtectedSessionStore.SetAsync("UserId", user.Id);
+
+        NavManager.NavigateTo("/location");
     }
+
     public class LoginModel
     {
         public string Email { get; set; }
