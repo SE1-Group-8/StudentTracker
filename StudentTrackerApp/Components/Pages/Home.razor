@@ -8,7 +8,6 @@
 @inject UserSession session
 @inject NavigationManager NavManager
 @inject ProtectedSessionStorage ProtectedSessionStore
-
 <PageTitle>Login</PageTitle>
 
 <h1>Login</h1>
@@ -29,12 +28,9 @@
 
     private async Task HandleLogin()
     {
-        var users = await userrepo.ReadAllUsersAsync();
         var email = loginModel.Email?.Trim().ToLowerInvariant();
         var password = loginModel.Password?.Trim();
-        var user = users.FirstOrDefault(u =>
-            u.Email.Trim().ToLowerInvariant() == email &&
-            u.Password.Trim() == password);
+        var user = await userrepo.GetUserByEmailAndPasswordAsync(email, password);
         if (user == null)
         {
             Error = $"Invalid email or password";

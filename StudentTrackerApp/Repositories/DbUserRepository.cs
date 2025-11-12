@@ -53,5 +53,14 @@ namespace StudentTrackerApp.Repositories
 				await _db.SaveChangesAsync();
 			}
 		}
-	}
+        public async Task<User?> GetUserByEmailAndPasswordAsync(string email, string password)
+        {
+            var normalizedEmail = email.Trim().ToLowerInvariant();
+            var normalizedPassword = password.Trim();
+            return await _db.UserDb
+                .FirstOrDefaultAsync(u =>
+                    u.Email.ToLower() == normalizedEmail &&
+                    u.Password == normalizedPassword);
+        }
+    }
 }
