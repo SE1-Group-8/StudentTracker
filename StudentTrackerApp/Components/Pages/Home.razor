@@ -19,6 +19,11 @@
     <InputText @bind-Value="loginModel.Password" placeholder="Password" type="password" />
     <button type="submit">Login</button>
 </EditForm>
+@if (!string.IsNullOrEmpty(Error))
+{
+    <p class="text-danger">@Error</p>
+}
+
 
 
 @code
@@ -45,7 +50,7 @@
 
         await ProtectedSessionStore.SetAsync("UserId", user.Id);
 
-        NavManager.NavigateTo("/location");
+        NavManager.NavigateTo("/userDashboard");
     }
 
     public class LoginModel
