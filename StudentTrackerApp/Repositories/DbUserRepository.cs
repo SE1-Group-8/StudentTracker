@@ -55,8 +55,12 @@ namespace StudentTrackerApp.Repositories
 		}
         public async Task<User?> GetUserByEmailAndPasswordAsync(string email, string password)
         {
+            if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
+                return null;
+
             var normalizedEmail = email.Trim().ToLowerInvariant();
             var normalizedPassword = password.Trim();
+
             return await _db.UserDb
                 .FirstOrDefaultAsync(u =>
                     u.Email.ToLower() == normalizedEmail &&
