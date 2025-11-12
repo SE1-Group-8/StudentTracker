@@ -6,12 +6,28 @@
 @inject UserSession Session
 @inject IUserRepository UserRepo
 
-<NavMenu />
+<div class="page">
+    <div class="sidebar">
+        <NavMenu />
+    </div>
 
-<main class="container">
-    @Body
-</main>
+    <main>
+        <div class="top-row px-4">
+            <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
+        </div>
 
+        <article class="content px-4">
+            @if (_isSessionLoaded)
+            {
+                @Body
+            }
+            else
+            {
+                <p>Loading Session...</p>
+            }
+        </article>
+    </main>
+</div>
 
 @code {
     private bool _isSessionLoaded = false;
