@@ -18,15 +18,17 @@
 {
     @foreach (Message message in AllMessages){
         if (message.SenderId == session.Id){
-            <div style="border: 2px solid black ; text-align:right; padding-right: 10%">
+            <div style="border-radius:10px; background-color:lightgreen; text-align:right; padding-right: 10px; margin:2px">
                 <b>@session.FirstName @session.LastName</b>
+                <br />
                 @message.MessageContent
             </div>
         }
         else
         {
-            <div style="border: 2px solid black ;" >
+            <div style="border-radius:10px; background-color: lightblue; padding-left: 10px; margin:2px" >
                 <b>@Reciever.FirstName @Reciever.LastName</b>
+                <br />
                 @message.MessageContent
             </div>
         }
