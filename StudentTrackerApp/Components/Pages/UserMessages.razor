@@ -11,9 +11,8 @@
 @rendermode InteractiveServer
 @inject NavigationManager nav
 
-<h3>Message</h3>
+<h3>Messages - @Reciever.FirstName @Reciever.LastName</h3>
 <hr />
-<h5>@Reciever.FirstName @Reciever.LastName</h5>
 @if (AllMessages.Count != 0)
 {
     @foreach (Message message in AllMessages){

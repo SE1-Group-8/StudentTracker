@@ -15,7 +15,7 @@
 <hr />
 @foreach (User contact in Contacts){
     Message LastMessage = GetLastMessageForContact(contact);
-    <div @onclick="(() => RedirectToContactMessages(contact))">
+    <div style="cursor:pointer;margin-bottom:10px;padding:10px;border-radius:15px; box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3);" @onclick="(() => RedirectToContactMessages(contact))">
 
         <h5>@contact.FirstName @contact.LastName</h5>
 
@@ -48,7 +48,6 @@
         {
             <p><i>No Messages with this contact yet...</i></p>
         }
-        <hr />
     </div>
 }
 
