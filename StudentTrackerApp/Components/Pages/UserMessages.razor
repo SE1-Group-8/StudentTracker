@@ -1,0 +1,137 @@
+﻿@page "/Messages/{contactId:int}"
+@attribute [StreamRendering]
+@implements IDisposable
+@using Repositories
+@using Models
+@using Services
+@inject IUserRepository userrepo
+@inject IStudentTeacherRepository studentteacherrepo
+@inject UserSession session
+@inject IMessageRepository messagerepo
+@rendermode InteractiveServer
+@inject NavigationManager nav
+
+<h3>Message</h3>
+<hr />
+<h5>@Reciever.FirstName @Reciever.LastName</h5>
+@if (AllMessages.Count != 0)
+{
+    @foreach (Message message in AllMessages){
+        if (message.SenderId == session.Id){
+            <div style="border-radius:10px; background-color:lightgreen; text-align:right; padding-right: 10px; margin:2px">
+                <b>@session.FirstName @session.LastName</b>
+                <span style="font-size:small"> @message.DateTime</span>
+                <br />
+                @message.MessageContent
+            </div>
+        }
+        else
+        {
+            <div style="border-radius:10px; background-color: lightblue; padding-left: 10px; margin:2px" >
+                <b>@Reciever.FirstName @Reciever.LastName</b>
+                <span style="font-size:small"> @message.DateTime</span>
+                <br />
+                @message.MessageContent
+            </div>
+        }
+    }
+    <br />
+    <br />
+    <br />
+}
+else { <p><i>No Messages Yet...</i></p> }
+<input @onkeydown="HandleKeyPress" @bind="messageToSend" @bind:event="oninput" type="text" style="position: fixed;width:80%; bottom: 10px; left: auto; padding: 10px; padding-left: 10%" />
+<button @onclick="sendMessage" type="submit" style="position: fixed; bottom: 10px; left: auto; padding: 10px; ">Send</button>
+
+
+
+
+@code{
+    [Parameter]
+    public int contactId { get; set; }
+
+    private string messageToSend = string.Empty;
+
+    private ICollection<Message> AllMessages = new List<Message>();
+
+    private User Reciever = new();
+
+    private System.Timers.Timer? _timer;
+
+    protected override async Task OnInitializedAsync()
+    {
+        Reciever = await userrepo.ReadUserAsync(contactId);
+        if (!session.IsLoggedIn){
+            nav.NavigateTo("/login");
+        }
+        if (Reciever.Id == session.Id){
+            nav.NavigateTo("/messages");
+        }
+        List<int> userids = new List<int>();
+        if (session.UserType == "Teacher")
+        {
+            userids = await studentteacherrepo.GetStudentsByTeacherIdAsync(session.Id);
+        }
+        else
+        {
+            userids = await studentteacherrepo.GetTeachersByStudentIdAsync(session.Id);
+        }
+        if (!userids.Contains(Reciever.Id)){
+            nav.NavigateTo("/messages");
+        }
+        await LoadMessages();
+
+        _timer = new System.Timers.Timer(3000); // 3 seconds
+        _timer.Elapsed += async (sender, e) => await OnTimerElapsed();
+        _timer.Enabled = true;
+
+
+    }
+
+    private async Task OnTimerElapsed(){
+        await LoadMessages();
+        await InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        _timer?.Dispose();
+    }
+
+    private async Task HandleKeyPress(KeyboardEventArgs e){
+        if (e.Key == "Enter" || e.Code == "NumpadEnter"){
+            await sendMessage();
+        }
+    }
+
+    private async Task LoadMessages(){
+        ICollection<Message> temp = await messagerepo.ReadAllMessagesByUserIdAsync(session.Id);
+        AllMessages = temp.Where(m => m.SenderId == contactId || m.RecieverId == contactId).ToList();
+        await readUnreadMessages();
+    }
+
+    private async Task sendMessage(){
+        if (messageToSend != "" || messageToSend != string.Empty){
+            Message newMessage = new Message();
+            newMessage.SenderId = session.Id;
+            newMessage.RecieverId = Reciever.Id;
+            newMessage.DateTime = System.DateTime.Now;
+            newMessage.ReadByReciever = false;
+            newMessage.MessageContent = messageToSend;
+            await messagerepo.CreateMessageAsync(newMessage);
+            messageToSend = string.Empty;
+            await LoadMessages();
+        }
+        else {
+            return;
+        }
+    }
+
+    private async Task readUnreadMessages(){
+        var myUnseenMessages = AllMessages.Where(m => m.RecieverId == session.Id && !m.ReadByReciever).ToList();
+        foreach (Message message in myUnseenMessages){
+            message.ReadByReciever = true;
+            await messagerepo.UpdateMessageAsync(message.Id, message);
+        }
+    }
+}

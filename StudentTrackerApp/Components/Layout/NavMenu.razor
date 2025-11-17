@@ -1,48 +1,65 @@
-﻿<div class="top-row ps-3 navbar navbar-dark">
+﻿@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@using Services
+@inject NavigationManager NavManager
+@inject ProtectedSessionStorage ProtectedSessionStore
+@inject UserSession Session
+
+<nav class="navbar navbar-expand-md navbar-dark bg-dark mb-4">
     <div class="container-fluid">
-        <a class="navbar-brand" href="">StudentTrackerApp</a>
+        <a class="navbar-brand" href="">Student Tracker App</a>
+        <button class="navbar-toggler @NavButtonCssClass" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse"
+                aria-controls="navbarCollapse" aria-label="Toggle navigation" @onclick="ToggleNavMenu">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse @NavBarCssClass" id="navbarCollapse">
+            <ul class="navbar-nav me-auto mb-2 mb-md-0">
+                <li class="nav-item">
+                    <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+                        <span class="oi oi-home" aria-hidden="true"></span> Home
+                    </NavLink>
+                </li>
+                <li class="nav-item">
+                    <NavLink class="nav-link" href="createaccount">
+                        <span class="oi oi-plus" aria-hidden="true"></span> Counter
+                    </NavLink>
+                </li>
+                <li class="nav-item">
+                    <NavLink class="nav-link" href="location">
+                        <span class="oi oi-list-rich" aria-hidden="true"></span> Location
+                    </NavLink>
+                </li>
+                <li class="nav-item">
+                    <NavLink class="nav-link" href="Messages">
+                        <span class="oi oi-list-rich" aria-hidden="true"></span> Messages
+                    </NavLink>
+                </li>
+            </ul>
+            <ul class="navbar-nav ms-auto mb-2 mb-md-0">
+                <li class="nav-item">
+                    <NavLink class="nav-link" style="cursor: pointer" @onclick="Logout">
+                        <span class="oi oi-account-login"  aria-hidden="true"></span> Logout
+                    </NavLink>
+                </li>
+            </ul>
+        </div>
     </div>
-</div>
+</nav>
 
-<input type="checkbox" title="Navigation menu" class="navbar-toggler" />
+@code {
+    private bool collapseNavMenu = true;
+    private string? NavBarCssClass => collapseNavMenu ? null : "show";
+    private string? NavButtonCssClass => collapseNavMenu ? "collapsed" : null;
 
-<div class="nav-scrollable" onclick="document.querySelector('.navbar-toggler').click()">
-    <nav class="flex-column">
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
-            </NavLink>
-        </div>
+    private void ToggleNavMenu()
+    {
+        collapseNavMenu = !collapseNavMenu;
+    }
 
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="userDashboard">
-                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Dashboard
-            </NavLink>
-        </div>
-
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="counter">
-                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Create Account
-            </NavLink>
-        </div>
-
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="teacher">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Teacher
-            </NavLink>
-        </div>
-
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="location">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Location (TESTING)
-            </NavLink>
-        </div>
-
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="checkinlog">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Check Log (TESTING)
-            </NavLink>
-        </div>
-    </nav>
-</div>
-
+    private async Task Logout()
+    {
+        Session.Id = 0;
+        await ProtectedSessionStore.DeleteAsync("UserId");
+        NavManager.NavigateTo("/login");
+    }
+}

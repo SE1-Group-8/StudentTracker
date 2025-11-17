@@ -10,5 +10,6 @@ namespace StudentTrackerApp.Repositories
 		Task<User?> ReadUserAsync(int id);
 		Task UpdateUserAsync(int oldId, User user);
 		Task DeleteUserAsync(int id);
-	}
+        Task<User?> GetUserByEmailAndPasswordAsync(string email, string password);
+    }
 }
