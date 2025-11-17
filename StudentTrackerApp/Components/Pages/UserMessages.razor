@@ -61,6 +61,24 @@ else { <p><i>No Messages Yet...</i></p> }
     protected override async Task OnInitializedAsync()
     {
         Reciever = await userrepo.ReadUserAsync(contactId);
+        if (!session.IsLoggedIn){
+            nav.NavigateTo("/login");
+        }
+        if (Reciever.Id == session.Id){
+            nav.NavigateTo("/messages");
+        }
+        List<int> userids = new List<int>();
+        if (session.UserType == "Teacher")
+        {
+            userids = await studentteacherrepo.GetStudentsByTeacherIdAsync(session.Id);
+        }
+        else
+        {
+            userids = await studentteacherrepo.GetTeachersByStudentIdAsync(session.Id);
+        }
+        if (!userids.Contains(Reciever.Id)){
+            nav.NavigateTo("/messages");
+        }
         await LoadMessages();
 
         _timer = new System.Timers.Timer(3000); // 3 seconds

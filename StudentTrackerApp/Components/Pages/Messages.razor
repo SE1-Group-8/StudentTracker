@@ -63,6 +63,10 @@
 
     protected override async Task OnInitializedAsync()
     {
+        if (!session.IsLoggedIn)
+        {
+            nav.NavigateTo("/login");
+        }
         List<int> userids = new List<int>();
         if (session.UserType == "Teacher"){
             userids = await studentteacherrepo.GetStudentsByTeacherIdAsync(session.Id);
