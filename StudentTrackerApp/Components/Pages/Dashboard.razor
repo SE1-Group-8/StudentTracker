@@ -1,4 +1,4 @@
-@page "/userDashboard"
+@page "/"
 @attribute [StreamRendering]
 @using Repositories
 @using Models
@@ -91,7 +91,7 @@ else {
     private List<User> connections = new();
     private string notiString = string.Empty;
     private bool IsLoggedIn => Session != null && Session.Id != 0;
-    private bool IsStudent => Session != null && Session.UserType.ToLower() == "student";
+    private bool IsStudent;
     private Student? studentUser;
     private double? Latitude;
     private double? Longitude;
@@ -155,7 +155,7 @@ else {
                 log.WithinRange = IsWithinFiveMiles(
                     log.CheckInLatitude, log.CheckInLongitude,
                     log.CheckOutLatitude.Value, log.CheckOutLongitude.Value);
-                
+
                 await CheckInRepo.UpdateCheckOutAsync(log);
                 IsCheckedIn = false;
             } else {
@@ -206,6 +206,14 @@ else {
     protected override async Task OnInitializedAsync()
     {
         if(IsLoggedIn){
+            if (Session.UserType == "Student")
+            {
+                IsStudent = true;
+            }
+            else
+            { 
+                IsStudent = false; 
+            }
             user = await UserRepo.ReadUserAsync(Session.Id);
             List<int> connectionIDs = new List<int>();
 
@@ -233,7 +241,7 @@ else {
                 connections.Add(await UserRepo.ReadUserAsync(personId));
             }
         } else{
-            NavMan.NavigateTo("/");
+            NavMan.NavigateTo("/login");
         }
     }
 }
