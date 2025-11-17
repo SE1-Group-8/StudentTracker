@@ -21,7 +21,7 @@ namespace StudentTrackerApp.Models
 
         // True if student was within 5 miles at checkout
         public bool WithinRange { get; set; }
-
+        public string? Notes { get; set; }
         public virtual User? User { get; set; }
     }
 }

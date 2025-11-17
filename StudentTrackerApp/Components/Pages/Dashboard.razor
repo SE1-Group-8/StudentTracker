@@ -18,6 +18,14 @@
 </div>
 
 <div class="table-responsive mt-3">
+    @if (!IsStudent)
+    {
+        <h3>Students Assigned</h3>
+    }
+    @if (!IsStudent)
+    {
+        <h3>Teachers Assigned</h3>
+    }
     <table class="table table-striped align-middle text-center shadow-sm rounded-3 overflow-hidden">
         <thead class="table-dark">
             <tr>
@@ -43,8 +51,7 @@
                     @if (!IsStudent)
                     {
                         <td>
-                            <a
-                               href="/student-checkin/@person.Id">
+                            <a href="/student-checkin/@person.Id">
                                 View Logs
                             </a>
                         </td>
@@ -55,42 +62,58 @@
     </table>
 </div>
 
-
 <hr />
-
 
 @if (IsStudent)
 {
+    <!-- NOTES TEXTAREA -->
+    <div class="mt-3">
+        <textarea class="form-control"
+                  @bind="CheckoutNotes"
+                  placeholder="Enter notes before checking out..."
+                  rows="3"></textarea>
+    </div>
+
     <div class="d-flex gap-2 mt-3">
         <btn class="btn btn-success" @onclick="CheckInAsync" disabled="@(!IsLoggedIn || IsCheckedIn)">Check In</btn>
-        <btn class="btn btn-danger" @onclick="CheckOutAsync" disabled="@(!IsLoggedIn || isLoading ||
-        !IsCheckedIn)">Check Out</btn>
+        <btn class="btn btn-danger" @onclick="CheckOutAsync" disabled="@(!IsLoggedIn || isLoading || !IsCheckedIn)">Check Out</btn>
     </div>
-    @if(!IsLoggedIn){
+
+    @if (!IsLoggedIn)
+    {
         <p class="text-warning mt-3">Please sign in to use the check-in system.</p>
-        } else if(!string.IsNullOrEmpty(errorMessage)){
-            <p class="text-danger mt-3">Error: @errorMessage</p>
-        } else if(isLoading){
-            <p class="text-info mt-3">Fetching location...</p>
-        } else if (Latitude.HasValue && Longitude.HasValue){
-            <div class="mt-3">
-                <p><strong>Status:</strong> @(IsCheckedIn ? "Checked In" : "Checked Out")</p>
-                <p><strong>Latitude:</strong> @Latitude</p>
-                <p><strong>Longitude:</strong> @Longitude</p>
-                <p><strong>TimeStamp:</strong> @TimeStamp?.ToString("yyyy-MM-dd HH:mm:ss")</p>
-            </div>
-        } else {
-            <p class="mt-3">No check-in data yet.</p>
-        }
-} 
-else {
+    }
+    else if (!string.IsNullOrEmpty(errorMessage))
+    {
+        <p class="text-danger mt-3">Error: @errorMessage</p>
+    }
+    else if (isLoading)
+    {
+        <p class="text-info mt-3">Fetching location...</p>
+    }
+    else if (Latitude.HasValue && Longitude.HasValue)
+    {
+        <div class="mt-3">
+            <p><strong>Status:</strong> @(IsCheckedIn ? "Checked In" : "Checked Out")</p>
+            <p><strong>Latitude:</strong> @Latitude</p>
+            <p><strong>Longitude:</strong> @Longitude</p>
+            <p><strong>TimeStamp:</strong> @TimeStamp?.ToString("yyyy-MM-dd HH:mm:ss")</p>
+        </div>
+    }
+    else
+    {
+        <p class="mt-3">No check-in data yet.</p>
+    }
+}
+else
+{
     <h3>Notification</h3>
     <div>
-        <input type="text" @bind="notiString" placeholder="Enter Notification..." class="form-control"/>
+        <input type="text" @bind="notiString" placeholder="Enter Notification..." class="form-control" />
         <btn class="btn btn-primary" @onclick="() => PushNotification(notiString)">Push Notification</btn>
     </div>
 }
-        
+
 @code {
     private User user = new User();
     private List<User> connections = new();
@@ -98,40 +121,48 @@ else {
     private bool IsLoggedIn => Session != null && Session.Id != 0;
     private bool IsStudent;
     private Student? studentUser;
+
     private double? Latitude;
     private double? Longitude;
     private bool IsCheckedIn = false;
     private string? errorMessage;
+    private DateTime? TimeStamp;
+    private bool isLoading = false;
 
-    private class LocationData{
+    private string CheckoutNotes = string.Empty;
+
+    private class LocationData
+    {
         public double Latitude { get; set; }
         public double Longitude { get; set; }
     }
 
-    private DateTime? TimeStamp;
-    private bool isLoading = false;
-
     public record GeolocationCoordinates(double Latitude, double Longitude);
 
-
-    void PushNotification(string we){
+    void PushNotification(string we)
+    {
     }
 
-    private async Task CheckInAsync(){
-        if(!IsLoggedIn){
+    private async Task CheckInAsync()
+    {
+        if (!IsLoggedIn)
+        {
             return;
         }
 
         var existing = await CheckInRepo.GetActiveCheckInAsync(Session.Id);
-        if(existing != null && existing.CheckOutTime == null){
+        if (existing != null && existing.CheckOutTime == null)
+        {
             errorMessage = "You are already checked in.";
             IsCheckedIn = true;
             return;
         }
 
         await GetLocationAsync();
-        if(Latitude.HasValue && Longitude.HasValue){
-            var log = new CheckInLog {
+        if (Latitude.HasValue && Longitude.HasValue)
+        {
+            var log = new CheckInLog
+            {
                 UserId = Session.Id,
                 CheckInLatitude = Latitude.Value,
                 CheckInLongitude = Longitude.Value,
@@ -140,20 +171,25 @@ else {
             };
 
             await CheckInRepo.CreateCheckInAsync(log);
+
             IsCheckedIn = true;
             TimeStamp = log.CheckInTime;
         }
     }
 
-    private async Task CheckOutAsync(){
-        if(!IsLoggedIn){
+    private async Task CheckOutAsync()
+    {
+        if (!IsLoggedIn)
+        {
             return;
         }
 
         await GetLocationAsync();
-        if(Latitude.HasValue && Longitude.HasValue){
+        if (Latitude.HasValue && Longitude.HasValue)
+        {
             var log = await CheckInRepo.GetActiveCheckInAsync(Session.Id);
-            if(log != null && log.CheckOutTime == null){
+            if (log != null && log.CheckOutTime == null)
+            {
                 log.CheckOutLatitude = Latitude.Value;
                 log.CheckOutLongitude = Longitude.Value;
                 log.CheckOutTime = DateTime.Now;
@@ -161,16 +197,27 @@ else {
                     log.CheckInLatitude, log.CheckInLongitude,
                     log.CheckOutLatitude.Value, log.CheckOutLongitude.Value);
 
+                // Save notes
+                log.Notes = CheckoutNotes;
+
                 await CheckInRepo.UpdateCheckOutAsync(log);
+
+                // Reset notes after saving
+                CheckoutNotes = string.Empty;
+
                 IsCheckedIn = false;
-            } else {
+            }
+            else
+            {
                 errorMessage = "No active check-in found.";
             }
         }
     }
 
-    private async Task GetLocationAsync(){
-        try{
+    private async Task GetLocationAsync()
+    {
+        try
+        {
             isLoading = true;
             errorMessage = null;
             StateHasChanged();
@@ -179,9 +226,13 @@ else {
             Latitude = result.Latitude;
             Longitude = result.Longitude;
             TimeStamp = DateTime.Now;
-        } catch(Exception ex){
+        }
+        catch (Exception ex)
+        {
             errorMessage = ex.Message;
-        } finally {
+        }
+        finally
+        {
             isLoading = false;
             StateHasChanged();
         }
@@ -201,31 +252,34 @@ else {
                    Math.Cos(lat1) * Math.Cos(lat2);
 
         double c = 2 * Math.Asin(Math.Sqrt(a));
-
-        double distance = R * c; // distance in feet
+        double distance = R * c;
 
         return distance <= 500.0;
     }
 
     protected override async Task OnInitializedAsync()
     {
-        if(IsLoggedIn){
+        if (IsLoggedIn)
+        {
             if (Session.UserType == "Student")
             {
                 IsStudent = true;
             }
             else
-            { 
-                IsStudent = false; 
+            {
+                IsStudent = false;
             }
+
             user = await UserRepo.ReadUserAsync(Session.Id);
+
             List<int> connectionIDs = new List<int>();
 
             if (IsStudent)
             {
                 var activeCheckIn = await CheckInRepo.GetActiveCheckInAsync(user.Id);
-                
-                if(activeCheckIn != null && activeCheckIn.CheckOutTime == null){
+
+                if (activeCheckIn != null && activeCheckIn.CheckOutTime == null)
+                {
                     IsCheckedIn = true;
                     Latitude = activeCheckIn.CheckInLatitude;
                     Longitude = activeCheckIn.CheckInLongitude;
@@ -244,9 +298,10 @@ else {
             {
                 connections.Add(await UserRepo.ReadUserAsync(personId));
             }
-        } else{
+        }
+        else
+        {
             NavMan.NavigateTo("/login");
         }
     }
 }
-
