@@ -17,7 +17,7 @@
 {
     @foreach (Message message in AllMessages){
         if (message.SenderId == session.Id){
-            <div style="border-radius:10px; background-color:lightgreen; text-align:right; padding-right: 10px; margin:2px">
+            <div style="margin:5px;box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);border-radius:10px; background-color:lightgreen; text-align:right; padding-right: 10px;">
                 <b>@session.FirstName @session.LastName</b>
                 <span style="font-size:small"> @message.DateTime</span>
                 <br />
@@ -26,7 +26,7 @@
         }
         else
         {
-            <div style="border-radius:10px; background-color: lightblue; padding-left: 10px; margin:2px" >
+            <div style="margin:5px;box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);border-radius:10px; background-color: lightblue; padding-left: 10px;">
                 <b>@Reciever.FirstName @Reciever.LastName</b>
                 <span style="font-size:small"> @message.DateTime</span>
                 <br />
@@ -39,8 +39,8 @@
     <br />
 }
 else { <p><i>No Messages Yet...</i></p> }
-<input @onkeydown="HandleKeyPress" @bind="messageToSend" @bind:event="oninput" type="text" style="position: fixed;width:80%; bottom: 10px; left: auto; padding: 10px; padding-left: 10%" />
-<button @onclick="sendMessage" type="submit" style="position: fixed; bottom: 10px; left: auto; padding: 10px; ">Send</button>
+<input @onkeydown="HandleKeyPress" @bind="messageToSend" @bind:event="oninput" type="text" style="border-radius:10px;position: fixed; width:stretch; bottom: 10px; left: auto; padding: 10px; padding-left: 10px; margin-right:85px" />
+<button @onclick="sendMessage" type="submit" style="border-color:royalblue;background-color:royalblue;color:white; border-radius:10px; position: fixed; bottom: 10px; right:10px; padding: 10px; ">Send</button>
 
 
 
