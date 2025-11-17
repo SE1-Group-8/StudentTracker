@@ -1,138 +1,73 @@
-﻿@page "/checkinlog"
+﻿@page "/student-checkin/{studentId:int}"
 @using Models
-@using Repositories
 @using Services
-@inject DbUserRepository UserRepo
-@inject IUserRepository UserRepo
-@inject DbStudentTeacherRepository StudentTeacherRepo
-@inject IStudentTeacherRepository StudentTeacherRepo
+@using Repositories
 @inject DbCheckInRepository CheckInRepo
+@inject IUserRepository UserRepo
 @inject UserSession Session
+@inject NavigationManager NavMan
 
+<PageTitle>Student Check-In Logs</PageTitle>
 
-<h3 class="text-2xl font-bold mb-4">Teacher Dashboard</h3>
-
-@if (students == null)
+@if (student == null)
 {
-    <p>Loading...</p>
-}
-else if (!students.Any())
-{
-    <p>No students assigned to you.</p>
+    <p class="text-danger">Student not found.</p>
 }
 else
 {
-    <table class="table-auto w-full border border-gray-300">
-        <thead class="bg-gray-100">
-            <tr>
-                <th class="p-2 text-left">Student Name</th>
-                <th class="p-2 text-left">Total Hours</th>
-                <th class="p-2 text-left">Range Flags</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var student in students)
-            {
-                var logs = student.CheckIns ?? new List<CheckInLog>();
-                var totalHours = logs
-                .Where(l => l.CheckOutTime != null)
-                .Sum(l => (l.CheckOutTime.Value - l.CheckInTime).TotalHours);
-                var outOfRange = logs.Count(l => !l.WithinRange);
+    <h2>@student.FirstName @student.LastName Check-In History</h2>
 
-                <tr class="border-t">
-                    <td class="p-2">@($"{student.FirstName} {student.LastName}")</td>
-                    <td class="p-2">@totalHours.ToString("0.00") hrs</td>
-                    <td class="p-2">@outOfRange</td>
-                    <td class="p-2">
-                        <button @onclick="() => ToggleStudent(student.Id)">
-                            @(expandedStudentIds.Contains(student.Id) ? "▲" : "▼")
-                        </button>
-                    </td>
+    @if (logs.Count == 0)
+    {
+        <p>No check-in history available.</p>
+    }
+    else
+    {
+        <table class="table table-striped mt-3 shadow-sm">
+            <thead class="table-dark">
+                <tr>
+                    <th>Check In Time</th>
+                    <th>Check Out Time</th>
+                    <th>Latitude (In)</th>
+                    <th>Longitude (In)</th>
+                    <th>Latitude (Out)</th>
+                    <th>Longitude (Out)</th>
+                    <th>Within 500 Feet</th>
                 </tr>
-
-                @if (expandedStudentIds.Contains(student.Id))
+            </thead>
+            <tbody>
+                @foreach (var log in logs)
                 {
-                    <tr class="bg-gray-50">
-                        <td colspan="4" class="p-3">
-                            <table class="table-auto w-full border">
-                                <thead class="bg-gray-200">
-                                    <tr>
-                                        <th class="p-2 text-left">Check In Time</th>
-                                        <th class="p-2 text-left">Check Out Time</th>
-                                        <th class="p-2 text-left">Within Range</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach (var log in logs)
-                                    {
-                                        <tr class="border-t">
-                                            <td class="p-2">@log.CheckInTime</td>
-                                            <td class="p-2">@log.CheckOutTime?.ToString()</td>
-                                            <td class="p-2">@log.WithinRange</td>
-                                        </tr>
-                                    }
-                                </tbody>
-                            </table>
-                        </td>
+                    <tr>
+                        <td>@log.CheckInTime</td>
+                        <td>@log.CheckOutTime</td>
+                        <td>@log.CheckInLatitude</td>
+                        <td>@log.CheckInLongitude</td>
+                        <td>@log.CheckOutLatitude</td>
+                        <td>@log.CheckOutLongitude</td>
+                        <td>@(log.WithinRange ? "Yes" : "No")</td>
                     </tr>
                 }
-            }
-        </tbody>
-    </table>
+            </tbody>
+        </table>
+    }
 }
+
 @code {
-    private List<StudentViewModel>? students;
-    private HashSet<int> expandedStudentIds = new();
+    [Parameter] public int studentId { get; set; }
+
+    private User? student;
+    private List<CheckInLog> logs = new();
 
     protected override async Task OnInitializedAsync()
     {
-        var teacherId = Session.Id;
-
-        // Get all assigned students for this teacher
-        var studentIds = await StudentTeacherRepo.GetStudentsByTeacherIdAsync(teacherId);
-
-        students = new List<StudentViewModel>();
-        foreach (var sid in studentIds)
+        if (Session.UserType == "Student")
         {
-            var student = await UserRepo.ReadUserAsync(sid);
-            if (student != null && student.UserType == "Student")
-            {
-                // Get all check-ins for this student
-                var logs = await GetStudentLogsAsync(student.Id);
-
-                students.Add(new StudentViewModel
-                {
-                    Id = student.Id,
-                    FirstName = student.FirstName,
-                    LastName = student.LastName,
-                    CheckIns = logs
-                });
-            }
+            NavMan.NavigateTo("/");
+            return;
         }
-    }
 
-    private async Task<List<CheckInLog>> GetStudentLogsAsync(int studentId)
-    {
-        //  public DbSet<CheckInLog> CheckInLogDb { get; set; }
-        return await CheckInRepo.GetLogsByUserIdAsync(studentId);
-
-    }
-
-    private void ToggleStudent(int id)
-    {
-        if (expandedStudentIds.Contains(id))
-            expandedStudentIds.Remove(id);
-        else
-            expandedStudentIds.Add(id);
-    }
-
-    private class StudentViewModel
-    {
-        public int Id { get; set; }
-        public string FirstName { get; set; } = string.Empty;
-        public string LastName { get; set; } = string.Empty;
-        public List<CheckInLog>? CheckIns { get; set; }
+        student = await UserRepo.ReadUserAsync(studentId);
+        logs = await CheckInRepo.GetLogsByUserIdAsync(studentId);
     }
 }
-

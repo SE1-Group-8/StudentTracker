@@ -17,18 +17,16 @@
     <h1>Welcome @user.FirstName @user.LastName</h1>
 </div>
 
-<div>
-    <table class="Table">
-        <thead>
+<div class="table-responsive mt-3">
+    <table class="table table-striped align-middle text-center shadow-sm rounded-3 overflow-hidden">
+        <thead class="table-dark">
             <tr>
                 <th>First Name</th>
                 <th>Last Name</th>
                 <th>E-mail</th>
                 @if (!IsStudent)
                 {
-                    <th>Location</th>
-                    <th>Check In Time</th>
-                    <th>Check Out Time</th>
+                    <th>Logs</th>
                 }
             </tr>
         </thead>
@@ -38,18 +36,25 @@
                 <tr>
                     <td>@person.FirstName</td>
                     <td>@person.LastName</td>
-                    <td>@person.Email</td>
-                    @if (person is Student student)
+                    <td>
+                        <a href="mailto:@person.Email" class="text-decoration-none">@person.Email</a>
+                    </td>
+
+                    @if (!IsStudent)
                     {
-                        <td>@student.Location</td>
-                        <td>@student.CheckInTime</td>
-                        <td>@student.CheckOutTime</td>
+                        <td>
+                            <a
+                               href="/student-checkin/@person.Id">
+                                View Logs
+                            </a>
+                        </td>
                     }
                 </tr>
             }
         </tbody>
     </table>
 </div>
+
 
 <hr />
 
@@ -152,7 +157,7 @@ else {
                 log.CheckOutLatitude = Latitude.Value;
                 log.CheckOutLongitude = Longitude.Value;
                 log.CheckOutTime = DateTime.Now;
-                log.WithinRange = IsWithinFiveMiles(
+                log.WithinRange = IsWithinFiveHundredFeet(
                     log.CheckInLatitude, log.CheckInLongitude,
                     log.CheckOutLatitude.Value, log.CheckOutLongitude.Value);
 
@@ -182,26 +187,25 @@ else {
         }
     }
 
-    private bool IsWithinFiveMiles(double lat1, double lon1, double lat2, double lon2) {
-        double R = 3958.8;
+    private bool IsWithinFiveHundredFeet(double lat1, double lon1, double lat2, double lon2)
+    {
+        double R = 20902000; // Earth radius in feet
         double dLat = (lat2 - lat1) * Math.PI / 180;
         double dLon = (lon2 - lon1) * Math.PI / 180;
 
         lat1 = lat1 * Math.PI / 180;
         lat2 = lat2 * Math.PI / 180;
 
-        double a = Math.Pow(Math.Sin(dLat / 2), 2) + 
-                   Math.Pow(Math.Sin(dLon / 2), 2) * 
+        double a = Math.Pow(Math.Sin(dLat / 2), 2) +
+                   Math.Pow(Math.Sin(dLon / 2), 2) *
                    Math.Cos(lat1) * Math.Cos(lat2);
 
         double c = 2 * Math.Asin(Math.Sqrt(a));
 
-        double distance = R * c;
+        double distance = R * c; // distance in feet
 
-        return distance <= 5.0;
+        return distance <= 500.0;
     }
-
-
 
     protected override async Task OnInitializedAsync()
     {
