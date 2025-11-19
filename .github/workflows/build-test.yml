@@ -50,13 +50,11 @@ jobs:
       if: matrix.os == 'windows-latest'
       shell: pwsh
       run: dotnet tool run playwright install --with-deps
-      working-directory: StudentTracker.E2ETests
 
     - name: Install Playwright (Linux)
       if: matrix.os != 'windows-latest'
       shell: bash
       run: dotnet tool run playwright install --with-deps
-      working-directory: StudentTracker.E2ETests
 
     - name: Run Playwright Tests
       working-directory: StudentTracker.E2ETests
