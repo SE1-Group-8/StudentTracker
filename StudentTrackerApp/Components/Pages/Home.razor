@@ -10,6 +10,42 @@
 @inject ProtectedSessionStorage ProtectedSessionStore
 <PageTitle>Login</PageTitle>
 
+<style>
+    form {
+        display: grid;
+        gap: 1rem;
+        width: min(320px, 90vw);
+    }
+
+    input, button {
+        padding: .65rem;
+        font-size: 1rem;
+        border-radius: .6rem;
+    }
+
+    input {
+        border: 1px solid #d0d0d0;
+    }
+
+    button {
+        border: none;
+        background: #2563eb;
+        color: #fff;
+    }
+
+        button:hover {
+            background: #1e4fc7;
+        }
+
+    .text-danger {
+        color: #dc2626;
+    }
+
+    a {
+        color: #2563eb;
+    }
+</style>
+
 <h1>Login</h1>
 
 <EditForm Model="@loginModel" OnValidSubmit="HandleLogin" FormName="LoginForm">
@@ -18,14 +54,12 @@
     <InputText @bind-Value="loginModel.Email" placeholder="Email" />
     <InputText @bind-Value="loginModel.Password" placeholder="Password" type="password" />
     <button type="submit">Login</button>
+    <a href="/createAccount">Create Account</a>
 </EditForm>
 @if (!string.IsNullOrEmpty(Error))
 {
     <p class="text-danger">@Error</p>
 }
-<div style="margin-top: 1rem;">
-    <button @onclick="GoToCreateAccount">Create Account</button>
-</div>
 
 
 
