@@ -41,13 +41,14 @@ name: Release
 on:
   workflow_run:
     workflows: ["Build and Test"]
-    types:
-      - completed
+    types: [completed]
+    branches:
+      - release
 
 jobs:
   release:
-    if: ${{ github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'release' }}
     runs-on: ubuntu-latest
+    if: github.event.workflow_run.conclusion == 'success'
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
