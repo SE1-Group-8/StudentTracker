@@ -18,10 +18,10 @@ jobs:
         dotnet-version: '8.0.x'
 
     - name: Restore dependencies
-      run: dotnet restore StudentTracker/StudentTrackerApp.sln
+      run: dotnet restore StudentTrackerApp.sln
 
     - name: Build Blazor App
-      run: dotnet build StudentTracker/StudentTrackerApp.sln --no-restore
+      run: dotnet build StudentTrackerApp.sln --no-restore
 
     - name: Restore dotnet tools
       working-directory: StudentTracker.E2ETests
