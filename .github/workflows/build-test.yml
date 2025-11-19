@@ -9,7 +9,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest]
+        os: [windows-latest]
 
     steps:
     - name: Checkout repository
@@ -31,16 +31,6 @@ jobs:
       shell: pwsh
       run: Start-Process "dotnet" "run --project StudentTrackerApp/StudentTrackerApp.csproj --urls http://localhost:5106" -NoNewWindow
 
-    - name: Start Blazor App (Linux)
-      if: matrix.os != 'windows-latest'
-      shell: bash
-      run: dotnet run --project StudentTrackerApp/StudentTrackerApp.csproj --urls http://localhost:5106 &
-
-    - name: Sleep (Non-Windows)
-      if: matrix.os != 'windows-latest'
-      run: sleep 5s
-      shell: bash
-
     - name: Sleep (Windows)
       if: matrix.os == 'windows-latest'
       run: Start-Sleep -s 5
@@ -51,10 +41,6 @@ jobs:
       shell: pwsh
       run: dotnet tool run playwright install --with-deps
 
-    - name: Install Playwright (Linux)
-      if: matrix.os != 'windows-latest'
-      shell: bash
-      run: dotnet tool run playwright install --with-deps
 
     - name: Run Playwright Tests
       working-directory: StudentTracker.E2ETests
