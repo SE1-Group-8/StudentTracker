@@ -36,7 +36,7 @@
 # For a complete CI/CD sample to get started with GitHub Action workflows for Desktop Applications,
 # refer to https://github.com/microsoft/github-actions-for-desktop-apps
 
-name: Release Blazor App
+name: Release
 
 on:
   workflow_run:
@@ -46,42 +46,22 @@ on:
 
 jobs:
   release:
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    if: ${{ github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'release' }}
     runs-on: ubuntu-latest
-
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-    - name: Setup .NET 8
-      uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: 8.0.x
+      - name: Setup .NET 8
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 8.0.x
 
-    - name: Build Blazor App in Release
-      run: dotnet publish StudentTrackerApp/StudentTrackerApp.csproj -c Release -o ./publish
+      - name: Publish app
+        run: dotnet publish StudentTracker/StudentTrackerApp/StudentTrackerApp.csproj --configuration Release --output ./publish
 
-    - name: Zip published app
-      run: |
-        cd publish
-        zip -r ../StudentTrackerApp.zip .
-        cd ..
-
-    - name: Create GitHub Release
-      id: create_release
-      uses: actions/create-release@v1
-      with:
-        tag_name: v${{ github.run_number }}
-        release_name: "Release ${{ github.run_number }}"
-        draft: false
-        prerelease: false
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-    - name: Upload Release Asset
-      uses: actions/upload-release-asset@v1
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./StudentTrackerApp.zip
-        asset_name: StudentTrackerApp.zip
-        asset_content_type: application/zip
+      - name: Upload release artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: ReleasePackage
+          path: ./publish
