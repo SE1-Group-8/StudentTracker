@@ -35,9 +35,9 @@ namespace StudentTracker.E2ETests.Tests
         {
             // Login first
             await page.GotoAsync("http://localhost:5106/login");
-            await page.FillAsync("input[name='email']", "bobbyhill@etsu.edu");
-            await page.FillAsync("input[name='password']", "Password");
-            await page.ClickAsync("button[type='submit']");
+            await page.FillAsync("input[name='Email']", "bobbyhill@etsu.edu");
+            await page.FillAsync("input[name='Password']", "Password");
+            await page.ClickAsync("button[type='Submit']");
 
             // Verify redirected to dashboard
             await page.WaitForSelectorAsync("h1:has-text('Welcome')");

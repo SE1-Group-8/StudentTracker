@@ -12,8 +12,8 @@
 {
     <p>Create an Account
     <InputRadioGroup @bind-Value="userType">
-        <InputRadio Value='"Teacher"'>Teacher</InputRadio>Teacher
-        <InputRadio Value='"Student"'>Student</InputRadio>Student
+        <InputRadio Value="@("Teacher")"/>Teacher
+        <InputRadio Value="@("Student")"/>Student
     </InputRadioGroup></p>
     
     <p>First Name: <input @bind='fName' type="text" name="firstName" /></p>

@@ -51,8 +51,8 @@
 <EditForm Model="@loginModel" OnValidSubmit="HandleLogin" FormName="LoginForm">
     <DataAnnotationsValidator />
     <ValidationSummary />
-    <InputText @bind-Value="loginModel.Email" placeholder="Email" />
-    <InputText @bind-Value="loginModel.Password" placeholder="Password" type="password" />
+    <InputText name="Email" @bind-Value="loginModel.Email" placeholder="Email" />
+    <InputText name="Password" @bind-Value="loginModel.Password" placeholder="Password" type="password" />
     <button type="submit">Login</button>
     <a href="/createAccount">Create Account</a>
 </EditForm>
