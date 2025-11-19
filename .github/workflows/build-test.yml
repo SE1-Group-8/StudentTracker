@@ -79,14 +79,17 @@ jobs:
         url: http://localhost:5106
         timeout: 60
 
-    - name: Install Playwright Browsers
+    - name: Install Playwright Browsers (Windows)
+      if: matrix.os == 'windows-latest'
       working-directory: StudentTracker.E2ETests
-      run: |
-        if [[ "${{ matrix.os }}" == "windows-latest" ]]; then
-          pwsh ./bin/Debug/net8.0/playwright.ps1 install
-        else
-          ./bin/Debug/net8.0/playwright.sh install
-        fi
+      shell: pwsh
+      run: ./bin/Debug/net8.0/playwright.ps1 install
+    
+    - name: Install Playwright Browsers (Linux)
+      if: matrix.os != 'windows-latest'
+      working-directory: StudentTracker.E2ETests
+      shell: bash
+      run: ./bin/Debug/net8.0/playwright.sh install
 
     - name: Run Playwright Tests
       working-directory: StudentTracker.E2ETests
