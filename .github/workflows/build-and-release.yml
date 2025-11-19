@@ -36,52 +36,83 @@
 # For a complete CI/CD sample to get started with GitHub Action workflows for Desktop Applications,
 # refer to https://github.com/microsoft/github-actions-for-desktop-apps
 
-name: Release Blazor App
+name: Release
 
 on:
-  workflow_run:
-    workflows: ["Build and Test"]
-    types:
-      - completed
+  push:
+    branches:
+      - release
 
 jobs:
   release:
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
-
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-    - name: Setup .NET 8
-      uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: 8.0.x
+      - name: Setup .NET 8
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 8.0.x
 
-    - name: Build Blazor App in Release
-      run: dotnet publish StudentTrackerApp/StudentTrackerApp.csproj -c Release -o ./publish
+      - name: Restore dependencies
+        run: dotnet restore StudentTracker/StudentTrackerApp.sln
 
-    - name: Zip published app
-      run: |
-        cd publish
-        zip -r ../StudentTrackerApp.zip .
-        cd ..
+      - name: Build & Test
+        run: |
+          dotnet build StudentTracker/StudentTrackerApp.sln --configuration Release
+          dotnet test StudentTracker/StudentTrackerApp.sln --no-build --logger "trx;LogFileName=TestResults.trx"
 
-    - name: Create GitHub Release
-      id: create_release
-      uses: actions/create-release@v1
-      with:
-        tag_name: v${{ github.run_number }}
-        release_name: "Release ${{ github.run_number }}"
-        draft: false
-        prerelease: false
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Publish app
+        run: dotnet publish StudentTracker/StudentTrackerApp/StudentTrackerApp.csproj --configuration Release --output ./publish
 
-    - name: Upload Release Asset
-      uses: actions/upload-release-asset@v1
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./StudentTrackerApp.zip
-        asset_name: StudentTrackerApp.zip
-        asset_content_type: application/zip
+      - name: Determine next semantic version
+        id: semver
+        run: |
+          LAST_TAG=$(git describe --tags --abbrev=0 || echo "v0.0.0")
+          echo "Last tag: $LAST_TAG"
+
+          IFS='.' read -r MAJOR MINOR PATCH <<< "${LAST_TAG#v}"
+
+          BUMP_TYPE="patch"
+          if [[ "${GITHUB_REF##*/}" == "release-major" ]]; then
+            BUMP_TYPE="major"
+          elif [[ "${GITHUB_REF##*/}" == "release-minor" ]]; then
+            BUMP_TYPE="minor"
+          fi
+
+          case $BUMP_TYPE in
+            major)
+              MAJOR=$((MAJOR+1))
+              MINOR=0
+              PATCH=0
+              ;;
+            minor)
+              MINOR=$((MINOR+1))
+              PATCH=0
+              ;;
+            patch)
+              PATCH=$((PATCH+1))
+              ;;
+          esac
+
+          NEW_TAG="v$MAJOR.$MINOR.$PATCH"
+          echo "New tag: $NEW_TAG"
+          echo "tag=$NEW_TAG" >> $GITHUB_OUTPUT
+
+      - name: Create Git tag
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git tag ${{ steps.semver.outputs.tag }}
+          git push origin ${{ steps.semver.outputs.tag }}
+
+      - name: Create GitHub Release
+        uses: ncipollo/release-action@v1
+        with:
+          tag: ${{ steps.semver.outputs.tag }}
+          name: Release ${{ steps.semver.outputs.tag }}
+          files: ./publish
+          draft: false
+          prerelease: false
+
