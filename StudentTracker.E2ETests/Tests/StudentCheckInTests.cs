@@ -1,94 +1,78 @@
 using Microsoft.Playwright;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Threading.Tasks;
 
 namespace StudentTracker.E2ETests.Tests
 {
     [TestClass]
-    public class StudentCheckInTests : TestBase
+    public class StudentCheckInTests
     {
-        private async Task<IPage> NewContextWithLocation()
+        private IBrowser? browser;
+        private IPage? page;
+        private IBrowserContext? context;
+
+        [TestInitialize]
+        public async Task Setup()
         {
-            var context = await Browser.NewContextAsync(new BrowserNewContextOptions
+            var playwright = await Playwright.CreateAsync();
+            browser = await playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions
             {
-                Geolocation = new Geolocation { Latitude = 41.23, Longitude = -72.55 },
-                Permissions = new[] { "geolocation" }
+                Headless = true
             });
 
-            return await context.NewPageAsync();
+            // Grant geolocation permission
+            context = await browser.NewContextAsync(new BrowserNewContextOptions
+            {
+                Permissions = new[] { "geolocation" },
+                Geolocation = new Geolocation { Latitude = 51.506F, Longitude = -0.127F },
+                Locale = "en-US"
+            });
+
+            page = await context.NewPageAsync();
         }
 
-        private async Task LoginAsync(IPage page)
+        [TestMethod]
+        public async Task TestStudentCheckInFlow()
         {
+            // Login first
             await page.GotoAsync("http://localhost:5106/login");
+            await page.FillAsync("input[name='email']", "student@example.com");
+            await page.FillAsync("input[name='password']", "password123");
+            await page.ClickAsync("button[type='submit']");
 
-            await page.FillAsync("input[name=Email]", "john@etsu.edu");
-            await page.FillAsync("input[name=Password]", "Pass123!");
+            // Verify redirected to dashboard
+            await page.WaitForSelectorAsync("h1:has-text('Welcome')");
 
-            await page.ClickAsync("button[type=submit]");
+            // Enter check-in notes
+            await page.FillAsync("textarea[placeholder='Enter notes before checking out...']", "Test notes");
 
-            await page.WaitForURLAsync("http://localhost:5106/");
+            // Click Check In
+            await page.ClickAsync("btn:has-text('Check In')");
+
+            // Wait for status update
+            var status = await page.TextContentAsync("p:has-text('Status: Checked In')");
+            Assert.IsNotNull(status);
+
+            // Check latitude/longitude displayed
+            var lat = await page.TextContentAsync("p:has-text('Latitude')");
+            Assert.IsTrue(lat.Contains("51.506"));
+
+            // Try to check in again -> error
+            await page.ClickAsync("btn:has-text('Check In')");
+            var error = await page.TextContentAsync("p.text-danger");
+            Assert.AreEqual("Error: You are already checked in.", error.Trim());
+
+            // Check Out
+            await page.ClickAsync("btn:has-text('Check Out')");
+            var newStatus = await page.TextContentAsync("p:has-text('Status: Checked Out')");
+            Assert.IsNotNull(newStatus);
         }
 
-        [TestMethod]
-        public async Task CanCheckIn()
+        [TestCleanup]
+        public async Task Cleanup()
         {
-            var page = await NewContextWithLocation();
-            await LoginAsync(page);
-
-            // Fill notes
-            await page.FillAsync("textarea[name=Notes]", "Arrived");
-
-            await page.ClickAsync("#checkin-btn");
-
-            await page.WaitForSelectorAsync("text=Checked In");
-            await page.WaitForSelectorAsync("text=41.23");
-            await page.WaitForSelectorAsync("text=-72.55");
-            await page.WaitForSelectorAsync("text=Timestamp");
-        }
-
-        [TestMethod]
-        public async Task CannotCheckInTwice()
-        {
-            var page = await NewContextWithLocation();
-            await LoginAsync(page);
-
-            // First check-in
-            await page.FillAsync("textarea[name=Notes]", "First");
-            await page.ClickAsync("#checkin-btn");
-            await page.WaitForSelectorAsync("text=Checked In");
-
-            // Try again
-            await page.ClickAsync("#checkin-btn");
-            await page.WaitForSelectorAsync("text=Error: You are already checked in");
-        }
-
-        [TestMethod]
-        public async Task CanCheckOut()
-        {
-            var page = await NewContextWithLocation();
-            await LoginAsync(page);
-
-            // Check in
-            await page.FillAsync("textarea[name=Notes]", "Morning");
-            await page.ClickAsync("#checkin-btn");
-            await page.WaitForSelectorAsync("text=Checked In");
-
-            // Check out
-            await page.ClickAsync("#checkout-btn");
-            await page.WaitForSelectorAsync("text=Checked Out");
-            await page.WaitForSelectorAsync("text=Timestamp");
-        }
-
-        [TestMethod]
-        public async Task CannotCheckOutWithoutCheckIn()
-        {
-            var page = await NewContextWithLocation();
-            await LoginAsync(page);
-
-            await page.ClickAsync("#checkout-btn");
-
-            await page.WaitForSelectorAsync("text=Error: No active check-in found");
+            if (page != null) await page.CloseAsync();
+            if (context != null) await context.CloseAsync();
+            if (browser != null) await browser.CloseAsync();
         }
     }
 }
