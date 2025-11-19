@@ -61,7 +61,7 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore
 
-    - name: Build
+    - name: Build Blazor App
       run: dotnet build --no-restore StudentTrackerApp/StudentTrackerApp.csproj
 
     - name: Start Blazor App
@@ -73,22 +73,30 @@ jobs:
         fi
       shell: bash
 
-    - name: Wait for server to be ready
-      uses: jakejarvis/wait-action@master
-      with:
-        url: http://localhost:5106
-        timeout: 60
-    
-    - name: Install Playwright Browsers (Windows)
-      if: matrix.os == 'windows-latest'
+    - name: Build Test Proj
+      run: dotnet build StudentTracker.E2ETests/StudentTracker.E2ETests.csproj
+
+    - name: Sleep (Non-Windows)
+      if: matrix.os != "windows-latest"
+      run: sleep 30s
+      shell: bash
+
+    - name: Sleep (Windows)
+      if: matrix.os == "windows-latest"
+      run: Start-Sleep -s 30
+      shell: powershell
+
+    - name: Install Playwright
+      if: matrix. os == "windows-latest"
       shell: pwsh
-      run: .\StudentTracker.E2ETests\bin\Debug\net8.0\playwright.ps1 install
-    
+      run: dotnet tool run playwright install --with-deps
+      working-directory: StudentTracker.E2ETests
+
     - name: Install Playwright Browsers (Linux)
       if: matrix.os != 'windows-latest'
       shell: bash
-      run: ./StudentTracker.E2ETests/bin/Debug/net8.0/playwright.sh install
-
+      run: dotnet tool run playwright install --with-deps
+      working-directory: StudentTracker.E2ETests
 
     - name: Run Playwright Tests
       working-directory: StudentTracker.E2ETests
