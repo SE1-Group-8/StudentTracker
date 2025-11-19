@@ -1,6 +1,6 @@
 # SE 1 Student Tracker App for Group 8  
 ## Adam Hooven, Adam Taylor, Braeden Mullins, Kyle Mazely, Nolan Trent
-  
+   
 ### Purpose: The Student Tracker is a webapp that will allow Users (Students, Teachers) to login to the service
 
 ### Roles
