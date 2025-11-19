@@ -28,7 +28,7 @@ jobs:
 
     - name: Restore Playwright Tool
       working-directory: StudentTracker.E2ETests
-      run: dotnet tool restore --tool-manifest .config/dotnet-tools.json
+      run: dotnet tool restore 
 
     - name: Install Playwright (Windows)
       if: matrix.os == 'windows-latest'
