@@ -7,25 +7,33 @@ namespace StudentTracker.E2ETests.Tests
     [TestClass]
     public class AccountCreationTests : TestBase
     {
+        private const string BaseUrl = "http://localhost:5106";
+
         [TestMethod]
         public async Task CanCreateAccount()
         {
-            var page = await Browser.NewPageAsync();
+            var context = await Browser.NewContextAsync();
+            var page = await context.NewPageAsync();
 
-            await page.GotoAsync("http://localhost:5106/createAccount");
+            await page.GotoAsync($"{BaseUrl}/createAccount");
 
-            // Select Student
-            await page.ClickAsync("input[type=radio][value=Student]");
+            await page.Locator("input[name=firstName]").WaitForAsync(new LocatorWaitForOptions
+            {
+                Timeout = 60000
+            });
 
-            await page.FillAsync("input[name=FirstName]", "John");
-            await page.FillAsync("input[name=LastName]", "Doe");
-            await page.FillAsync("input[name=Email]", "john@etsu.edu");
-            await page.FillAsync("input[name=Password]", "Pass123!");
+            await page.FillAsync("input[name=firstName]", "John");
+            await page.FillAsync("input[name=lastName]", "Doe");
+            await page.FillAsync("input[name=email]", "john.doe@etsu.edu");
+            await page.FillAsync("input[name=password]", "Password123");
 
-            await page.ClickAsync("button[type=submit]");
+            await page.Locator("input[type=radio][value='\"Teacher\"']").CheckAsync();
 
-            // Expect redirect or UI message
-            await page.WaitForSelectorAsync("text=Account created");
+            await page.ClickAsync("button:text('Submit')");
+
+            await page.Locator("text=Created! Redirecting").WaitForAsync();
+
+            await page.WaitForURLAsync("**/");
         }
     }
 }
