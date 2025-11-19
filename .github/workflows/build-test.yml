@@ -9,7 +9,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest]
+        os: [windows-latest]
 
     steps:
     - name: Checkout repository
@@ -21,40 +21,35 @@ jobs:
         dotnet-version: '8.0.x'
 
     - name: Restore dependencies
-      run: dotnet restore
+      run: dotnet restore StudentTrackerApp.sln
 
     - name: Build Solution
       run: dotnet build StudentTrackerApp.sln --no-restore
+
+    - name: Restore Playwright Tool
+      working-directory: StudentTracker.E2ETests
+      run: dotnet tool restore 
+
+    - name: Install Playwright (Global)
+      if: matrix.os == 'windows-latest'
+      shell: pwsh
+      run: dotnet tool install --global Microsoft.Playwright.CLI
+
+    - name: Add to PATH
+      run: echo "${{ env.USERPROFILE }}\\.dotnet\\tools" >> $GITHUB_PATH
+
+    - name: Install Playwright with deps
+      run: dotnet playwright install --with-deps
 
     - name: Start Blazor App (Windows)
       if: matrix.os == 'windows-latest'
       shell: pwsh
       run: Start-Process "dotnet" "run --project StudentTrackerApp/StudentTrackerApp.csproj --urls http://localhost:5106" -NoNewWindow
 
-    - name: Start Blazor App (Linux)
-      if: matrix.os != 'windows-latest'
-      shell: bash
-      run: dotnet run --project StudentTrackerApp/StudentTrackerApp.csproj --urls http://localhost:5106 &
-
-    - name: Sleep (Non-Windows)
-      if: matrix.os != 'windows-latest'
-      run: sleep 5s
-      shell: bash
-
     - name: Sleep (Windows)
       if: matrix.os == 'windows-latest'
       run: Start-Sleep -s 5
       shell: powershell
-
-    - name: Install Playwright (Windows)
-      if: matrix.os == 'windows-latest'
-      shell: pwsh
-      run: dotnet tool run playwright install --with-deps
-
-    - name: Install Playwright (Linux)
-      if: matrix.os != 'windows-latest'
-      shell: bash
-      run: dotnet tool run playwright install --with-deps
 
     - name: Run Playwright Tests
       working-directory: StudentTracker.E2ETests
