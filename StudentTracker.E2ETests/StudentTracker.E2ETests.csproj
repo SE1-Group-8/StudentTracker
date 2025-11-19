@@ -19,6 +19,7 @@
 
   <ItemGroup>
     <Using Include="Microsoft.VisualStudio.TestTools.UnitTesting" />
+    <Compile Include="Test/**/*.cs" />
   </ItemGroup>
 
 </Project>
