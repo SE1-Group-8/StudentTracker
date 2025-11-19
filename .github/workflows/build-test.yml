@@ -23,11 +23,8 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore
 
-    - name: Build Blazor App
-      run: dotnet build --no-restore StudentTrackerApp/StudentTrackerApp.csproj
-
-    - name: Build Test Project
-      run: dotnet build StudentTracker.E2ETests/StudentTracker.E2ETests.csproj
+    - name: Build Solution
+      run: dotnet build StudentTrackerApp.sln --no-restore
 
     - name: Start Blazor App (Windows)
       if: matrix.os == 'windows-latest'
