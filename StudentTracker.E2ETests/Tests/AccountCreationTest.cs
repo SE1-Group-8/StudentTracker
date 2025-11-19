@@ -17,10 +17,7 @@ namespace StudentTracker.E2ETests.Tests
 
             await page.GotoAsync($"{BaseUrl}/createAccount");
 
-            await page.Locator("input[name=firstName]").WaitForAsync(new LocatorWaitForOptions
-            {
-                Timeout = 60000
-            });
+            await page.WaitForSelectorAsync("input[name=firstName]", new PageWaitForSelectorOptions { Timeout = 60000 });
 
             await page.FillAsync("input[name=firstName]", "John");
             await page.FillAsync("input[name=lastName]", "Doe");
