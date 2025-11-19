@@ -25,66 +25,47 @@ else
     {
         <h4>Total Hours: @TotalHours.ToString("0.00")</h4>
 
-        <table class="table table-striped mt-3 shadow-sm">
-            <thead class="table-dark">
-                <tr>
-                    <th>Check In Time</th>
-                    <th>Check Out Time</th>
-                    <th>Latitude (In)</th>
-                    <th>Longitude (In)</th>
-                    <th>Latitude (Out)</th>
-                    <th>Longitude (Out)</th>
-                    <th>Within 500 Feet</th>
-                    <th>Hours</th>
-                    <th>Notes</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var log in logs)
-                {
-                    var rowHours = GetHours(log);
-                    string collapseId = $"notes-{log.Id}";
-
+        <div class="table-responsive">
+            <table class="table table-striped mt-3 shadow-sm">
+                <thead class="table-dark">
                     <tr>
-                        <td>@log.CheckInTime</td>
-                        <td>@log.CheckOutTime</td>
-                        <td>@log.CheckInLatitude</td>
-                        <td>@log.CheckInLongitude</td>
-                        <td>@log.CheckOutLatitude</td>
-                        <td>@log.CheckOutLongitude</td>
-                        <td>@(log.WithinRange ? "Yes" : "No")</td>
-                        <td>@rowHours.ToString("0.00")</td>
-                        <td>
-                            @if (!string.IsNullOrWhiteSpace(log.Notes))
-                            {
-                                <button class="btn btn-sm btn-primary"
-                                        type="button"
-                                        data-bs-toggle="collapse"
-                                        data-bs-target="#@collapseId">
-                                    View
-                                </button>
-                            }
-                            else
-                            {
-                                <span class="text-muted">No Notes</span>
-                            }
-                        </td>
+                        <th>Check In Time</th>
+                        <th>Check Out Time</th>
+                        <th>Latitude (In)</th>
+                        <th>Longitude (In)</th>
+                        <th>Latitude (Out)</th>
+                        <th>Longitude (Out)</th>
+                        <th>Within 500 Feet</th>
+                        <th>Hours</th>
                     </tr>
+                </thead>
 
-                    @if (!string.IsNullOrWhiteSpace(log.Notes))
+                <tbody>
+                    @foreach (var log in logs)
                     {
-                        <tr class="collapse" id="@collapseId">
-                            <td colspan="9">
-                                <div class="p-3 border rounded bg-light">
-                                    <strong>Notes:</strong>
-                                    <p class="mt-2">@log.Notes</p>
-                                </div>
+                        var rowHours = GetHours(log);
+
+                        <tr>
+                            <td>@log.CheckInTime</td>
+                            <td>@log.CheckOutTime</td>
+                            <td>@log.CheckInLatitude</td>
+                            <td>@log.CheckInLongitude</td>
+                            <td>@log.CheckOutLatitude</td>
+                            <td>@log.CheckOutLongitude</td>
+                            <td>@(log.WithinRange ? "Yes" : "No")</td>
+                            <td>@rowHours.ToString("0.00")</td>
+                        </tr>
+
+                        <tr class="table-light">
+                            <td colspan="8" class="notes-row">
+                                <strong>Notes:</strong>
+                                @(string.IsNullOrWhiteSpace(log.Notes) ? "---" : log.Notes)
                             </td>
                         </tr>
                     }
-                }
-            </tbody>
-        </table>
+                </tbody>
+            </table>
+        </div>
     }
 }
 

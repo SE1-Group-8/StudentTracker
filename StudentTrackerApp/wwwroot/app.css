@@ -49,3 +49,9 @@ h1:focus {
 .darker-border-checkbox.form-check-input {
     border-color: #929292;
 }
+
+.notes-row {
+    white-space: normal; /* allow wrapping */
+    word-wrap: break-word; /* old fallback */
+    overflow-wrap: anywhere; /* modern word-breaking */
+}
