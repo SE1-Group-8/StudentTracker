@@ -78,18 +78,17 @@ jobs:
       with:
         url: http://localhost:5106
         timeout: 60
-
+    
     - name: Install Playwright Browsers (Windows)
       if: matrix.os == 'windows-latest'
-      working-directory: StudentTracker.E2ETests
       shell: pwsh
-      run: ./bin/Debug/net8.0/playwright.ps1 install
+      run: .\StudentTracker.E2ETests\bin\Debug\net8.0\playwright.ps1 install
     
     - name: Install Playwright Browsers (Linux)
       if: matrix.os != 'windows-latest'
-      working-directory: StudentTracker.E2ETests
       shell: bash
-      run: ./bin/Debug/net8.0/playwright.sh install
+      run: ./StudentTracker.E2ETests/bin/Debug/net8.0/playwright.sh install
+
 
     - name: Run Playwright Tests
       working-directory: StudentTracker.E2ETests
