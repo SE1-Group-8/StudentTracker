@@ -30,10 +30,16 @@ jobs:
       working-directory: StudentTracker.E2ETests
       run: dotnet tool restore 
 
-    - name: Install Playwright (Windows)
+    - name: Install Playwright (Global)
       if: matrix.os == 'windows-latest'
       shell: pwsh
-      run: dotnet tool run playwright install --with-deps
+      run: dotnet tool install --global Microsoft.Playwright.CLI
+
+    - name: Add to PATH
+      run: echo "${{ env.USERPROFILE }}\\.dotnet\\tools" >> $GITHUB_PATH
+
+    - name: Install Playwright with deps
+      run: dotnet playwright install --with-deps
 
     - name: Start Blazor App (Windows)
       if: matrix.os == 'windows-latest'
