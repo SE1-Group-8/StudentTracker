@@ -77,23 +77,23 @@ jobs:
       run: dotnet build StudentTracker.E2ETests/StudentTracker.E2ETests.csproj
 
     - name: Sleep (Non-Windows)
-      if: matrix.os != "windows-latest"
+      if: matrix.os != windows-latest
       run: sleep 30s
       shell: bash
 
     - name: Sleep (Windows)
-      if: matrix.os == "windows-latest"
+      if: matrix.os == windows-latest
       run: Start-Sleep -s 30
       shell: powershell
 
     - name: Install Playwright
-      if: matrix. os == "windows-latest"
+      if: matrix. os == windows-latest
       shell: pwsh
       run: dotnet tool run playwright install --with-deps
       working-directory: StudentTracker.E2ETests
 
     - name: Install Playwright Browsers (Linux)
-      if: matrix.os != 'windows-latest'
+      if: matrix.os != windows-latest
       shell: bash
       run: dotnet tool run playwright install --with-deps
       working-directory: StudentTracker.E2ETests
