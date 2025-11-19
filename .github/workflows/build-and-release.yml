@@ -39,15 +39,13 @@
 name: Release
 
 on:
-  workflow_run:
-    workflows: ["Build and Test"]
-    types: [completed]
-
+  push:
+    branches:
+      - release
 
 jobs:
   release:
     runs-on: ubuntu-latest
-    if: github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'release'
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -57,20 +55,25 @@ jobs:
         with:
           dotnet-version: 8.0.x
 
+      - name: Restore dependencies
+        run: dotnet restore StudentTracker/StudentTrackerApp.sln
+
+      - name: Build & Test
+        run: |
+          dotnet build StudentTracker/StudentTrackerApp.sln --configuration Release
+          dotnet test StudentTracker/StudentTrackerApp.sln --no-build --logger "trx;LogFileName=TestResults.trx"
+
       - name: Publish app
         run: dotnet publish StudentTracker/StudentTrackerApp/StudentTrackerApp.csproj --configuration Release --output ./publish
 
       - name: Determine next semantic version
         id: semver
         run: |
-          # Get latest tag
           LAST_TAG=$(git describe --tags --abbrev=0 || echo "v0.0.0")
           echo "Last tag: $LAST_TAG"
 
-          # Parse major.minor.patch
           IFS='.' read -r MAJOR MINOR PATCH <<< "${LAST_TAG#v}"
 
-          # Determine bump type (default patch)
           BUMP_TYPE="patch"
           if [[ "${GITHUB_REF##*/}" == "release-major" ]]; then
             BUMP_TYPE="major"
@@ -109,7 +112,7 @@ jobs:
         with:
           tag: ${{ steps.semver.outputs.tag }}
           name: Release ${{ steps.semver.outputs.tag }}
-          artifacts: ./publish
+          files: ./publish
           draft: false
           prerelease: false
 
