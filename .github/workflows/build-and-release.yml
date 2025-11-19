@@ -60,8 +60,56 @@ jobs:
       - name: Publish app
         run: dotnet publish StudentTracker/StudentTrackerApp/StudentTrackerApp.csproj --configuration Release --output ./publish
 
-      - name: Upload release artifacts
-        uses: actions/upload-artifact@v3
+      - name: Determine next semantic version
+        id: semver
+        run: |
+          # Get latest tag
+          LAST_TAG=$(git describe --tags --abbrev=0 || echo "v0.0.0")
+          echo "Last tag: $LAST_TAG"
+
+          # Parse major.minor.patch
+          IFS='.' read -r MAJOR MINOR PATCH <<< "${LAST_TAG#v}"
+
+          # Determine bump type (default patch)
+          BUMP_TYPE="patch"
+          if [[ "${GITHUB_REF##*/}" == "release-major" ]]; then
+            BUMP_TYPE="major"
+          elif [[ "${GITHUB_REF##*/}" == "release-minor" ]]; then
+            BUMP_TYPE="minor"
+          fi
+
+          case $BUMP_TYPE in
+            major)
+              MAJOR=$((MAJOR+1))
+              MINOR=0
+              PATCH=0
+              ;;
+            minor)
+              MINOR=$((MINOR+1))
+              PATCH=0
+              ;;
+            patch)
+              PATCH=$((PATCH+1))
+              ;;
+          esac
+
+          NEW_TAG="v$MAJOR.$MINOR.$PATCH"
+          echo "New tag: $NEW_TAG"
+          echo "tag=$NEW_TAG" >> $GITHUB_OUTPUT
+
+      - name: Create Git tag
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git tag ${{ steps.semver.outputs.tag }}
+          git push origin ${{ steps.semver.outputs.tag }}
+
+      - name: Create GitHub Release
+        uses: ncipollo/release-action@v1
         with:
-          name: ReleasePackage
-          path: ./publish
+          tag: ${{ steps.semver.outputs.tag }}
+          name: Release ${{ steps.semver.outputs.tag }}
+          artifacts: ./publish
+          draft: false
+          prerelease: false
+
