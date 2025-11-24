@@ -6,7 +6,7 @@
 #### Logging In
 > To Log into the student tracker app, first make sure you have an account, then input your credentials to the Log in page and press *Enter* or click the login button.
 #### Logging Out
-> simply click *Logout* on the top left of the nav bar.
+> simply click *Logout* on the top right of the nav bar.
 ---
 ### Messages
 #### View and Send messages
