@@ -70,17 +70,35 @@
     <!-- NOTES TEXTAREA -->
     <div class="mt-3">
         <textarea class="form-control"
-        @bind="CheckoutNotes"
-        placeholder="Enter notes before checking out..."
-        rows="3"></textarea>
+                  @bind="CheckoutNotes"
+                  placeholder="Enter notes before checking out..."
+                  rows="3"></textarea>
     </div>
+
+    @* REQUIRED OUT-OF-RANGE EXPLANATION *@
+    @if (showDistanceExplanation)
+    {
+        <div class="mt-3">
+            <label class="form-label text-danger"><strong>You are over 500 feet from your check-in location. Please explain:</strong></label>
+            <textarea class="form-control"
+                      @bind="DistanceExplanation"
+                      rows="3"
+                      placeholder="Required explanation..."></textarea>
+        </div>
+    }
 
     <div class="d-flex gap-2 mt-3">
         <btn class="btn btn-success" @onclick="CheckInAsync" disabled="@(!IsLoggedIn || IsCheckedIn)">Check In</btn>
-        <btn class="btn btn-danger" @onclick="CheckOutAsync" disabled="@(!IsLoggedIn || isLoading || !IsCheckedIn)">Check Out</btn>
-    </div>
 
-    @if (!IsLoggedIn)
+        <btn class="btn btn-danger"
+             @onclick="CheckOutAsync"
+             disabled="@(!IsLoggedIn || isLoading || !IsCheckedIn ||
+                                                  (showDistanceExplanation && string.IsNullOrWhiteSpace(DistanceExplanation)))">
+        Check Out
+    </btn>
+</div>
+
+@if (!IsLoggedIn)
     {
         <p class="text-warning mt-3">Please sign in to use the check-in system.</p>
     }
@@ -132,6 +150,16 @@ else
 
     private string CheckoutNotes = string.Empty;
 
+    // NEW VARIABLES
+    private double initialLat;
+    private double initialLon;
+
+    private bool showDistanceExplanation = false;
+    private string DistanceExplanation = string.Empty;
+
+    private PeriodicTimer? locationTimer;
+    private CancellationTokenSource? timerToken;
+
     private class LocationData
     {
         public double Latitude { get; set; }
@@ -142,7 +170,7 @@ else
 
     void PushNotification(string we)
     {
-        foreach(User user in connections)
+        foreach (User user in connections)
         {
             Message newMessage = new Message();
             newMessage.SenderId = Session.Id;
@@ -173,11 +201,14 @@ else
         await GetLocationAsync();
         if (Latitude.HasValue && Longitude.HasValue)
         {
+            initialLat = Latitude.Value;
+            initialLon = Longitude.Value;
+
             var log = new CheckInLog
             {
                 UserId = Session.Id,
-                CheckInLatitude = Latitude.Value,
-                CheckInLongitude = Longitude.Value,
+                CheckInLatitude = initialLat,
+                CheckInLongitude = initialLon,
                 CheckInTime = DateTime.Now,
                 WithinRange = true
             };
@@ -186,13 +217,65 @@ else
 
             IsCheckedIn = true;
             TimeStamp = log.CheckInTime;
+
+            StartLocationMonitor();
         }
+    }
+
+    private void StartLocationMonitor()
+    {
+        timerToken?.Cancel();
+        timerToken = new CancellationTokenSource();
+
+        locationTimer = new PeriodicTimer(TimeSpan.FromMinutes(5)); //change to 5 mins when done testing
+
+        _ = Task.Run(async () =>
+        {
+            while (await locationTimer.WaitForNextTickAsync(timerToken.Token))
+            {
+                await InvokeAsync(async () =>
+                {
+                    await GetLocationAsync();
+
+                    if (Latitude.HasValue && Longitude.HasValue)
+                    {
+                        bool inRange = IsWithinFiveHundredFeet(
+                            initialLat, initialLon,
+                            Latitude.Value, Longitude.Value
+                        );
+
+                        if (!inRange)
+                        {
+                            // User not within range
+                            showDistanceExplanation = true;
+                        }
+                        else
+                        {
+                            // User is within range
+                            if (string.IsNullOrWhiteSpace(DistanceExplanation))
+                            {
+                                showDistanceExplanation = false;
+                            }
+                        }
+
+                    }
+
+                    StateHasChanged();
+                });
+            }
+        });
     }
 
     private async Task CheckOutAsync()
     {
         if (!IsLoggedIn)
         {
+            return;
+        }
+
+        if (showDistanceExplanation && string.IsNullOrWhiteSpace(DistanceExplanation))
+        {
+            errorMessage = "You must explain why you are more than 500 feet away before checking out.";
             return;
         }
 
@@ -209,13 +292,20 @@ else
                     log.CheckInLatitude, log.CheckInLongitude,
                     log.CheckOutLatitude.Value, log.CheckOutLongitude.Value);
 
-                // Save notes
                 log.Notes = CheckoutNotes;
+
+                if (!string.IsNullOrWhiteSpace(DistanceExplanation))
+                {
+                    log.Notes += $"\nOUT OF RANGE: {DistanceExplanation}";
+                }
 
                 await CheckInRepo.UpdateCheckOutAsync(log);
 
-                // Reset notes after saving
                 CheckoutNotes = string.Empty;
+                DistanceExplanation = string.Empty;
+                showDistanceExplanation = false;
+
+                timerToken?.Cancel();
 
                 IsCheckedIn = false;
             }
@@ -252,7 +342,7 @@ else
 
     private bool IsWithinFiveHundredFeet(double lat1, double lon1, double lat2, double lon2)
     {
-        double R = 20902000; // Earth radius in feet
+        double R = 20902000;
         double dLat = (lat2 - lat1) * Math.PI / 180;
         double dLon = (lon2 - lon1) * Math.PI / 180;
 
@@ -296,6 +386,11 @@ else
                     Latitude = activeCheckIn.CheckInLatitude;
                     Longitude = activeCheckIn.CheckInLongitude;
                     TimeStamp = activeCheckIn.CheckInTime;
+
+                    initialLat = activeCheckIn.CheckInLatitude;
+                    initialLon = activeCheckIn.CheckInLongitude;
+
+                    StartLocationMonitor();
                 }
 
                 studentUser = new Student(user);
