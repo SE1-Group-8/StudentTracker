@@ -60,8 +60,8 @@ jobs:
 
       - name: Build & Test
         run: |
-          dotnet build StudentTracker/StudentTrackerApp/StudentTrackerApp.csproj --configuration Release
-          dotnet test StudentTracker/StudentTrackerApp/StudentTrackerApp.csproj --no-build --logger "trx;LogFileName=TestResults.trx"
+          dotnet build StudentTrackerApp/StudentTrackerApp.csproj --configuration Release
+          dotnet test StudentTrackerApp/StudentTrackerApp.csproj --no-build --logger "trx;LogFileName=TestResults.trx"
 
       - name: Publish app
         run: dotnet publish StudentTracker/StudentTrackerApp/StudentTrackerApp.csproj --configuration Release --output ./publish
