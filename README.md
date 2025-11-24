@@ -242,6 +242,18 @@ Visit the `URL:port` provided to access the site.
 
 ---
 
+## Deployment Guide/Release Notes
+Deployment/Release is handled through an automated CI/CD pipeline:
+
+1. On push to release branch, build-and-release workflow triggered. The new commit will be built and tested.
+2. Upon passing tests, Release package is built for publishing
+3. Semantic Versioning is performed based on the "Bump Type" automatically determining versioning in the form of `v<MAJOR>.<MINOR>.<PATCH>`, the new tag is applied
+4. Creates GitHub Release providing the `.zip` archive and `tar.gz` tarball packages
+5. Release Notes/Changelog automatically generated for new Releases based on the [`release.yml`](.github/release.yml) configuration
+  * This also performs semantic versioning so changelogs/release notes will be aligned and provide more detailed information
+
+---
+
 ## Contributors
 
 This application was developed collaboratively to explore real world full stack development using Blazor, modular architecture, and user centered design.
