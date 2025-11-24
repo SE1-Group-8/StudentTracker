@@ -64,7 +64,7 @@ jobs:
           dotnet test StudentTrackerApp/StudentTrackerApp.csproj --no-build --logger "trx;LogFileName=TestResults.trx"
 
       - name: Publish app
-        run: dotnet publish StudentTracker/StudentTrackerApp/StudentTrackerApp.csproj --configuration Release --output ./publish
+        run: dotnet publish StudentTrackerApp/StudentTrackerApp.csproj --configuration Release --output ./publish
 
       - name: Determine next semantic version
         id: semver
