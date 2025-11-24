@@ -56,7 +56,7 @@ jobs:
           dotnet-version: 8.0.x
 
       - name: Restore dependencies
-        run: dotnet restore StudentTracker/StudentTrackerApp.sln
+        run: dotnet restore StudentTrackerApp.sln
 
       - name: Build & Test
         run: |
