@@ -37,7 +37,6 @@
 # refer to https://github.com/microsoft/github-actions-for-desktop-apps
 
 name: Release
-
 on:
   push:
     branches:
@@ -46,6 +45,8 @@ on:
 jobs:
   release:
     runs-on: ubuntu-latest
+    permissions: 
+      contents: write, read
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
